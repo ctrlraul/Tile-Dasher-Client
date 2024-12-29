@@ -1,0 +1,106 @@
+[gd_scene load_steps=3 format=3 uid="uid://6e2wy0aq5ns5"]
+
+[ext_resource type="Script" uid="uid://2sjeqgoh7yuu" path="res://Scripts/Pages/TrackEditor/TrackEditorPage.cs" id="1_3uxaf"]
+[ext_resource type="PackedScene" uid="uid://csd61vcjrarqn" path="res://Scenes/Pages/TrackEditor/TileButton.tscn" id="3_jvmvb"]
+
+[node name="TrackEditorPage" type="CanvasLayer"]
+script = ExtResource("1_3uxaf")
+TileButtonScene = ExtResource("3_jvmvb")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_type_variation = &"MarginContainer_ScreenMargin"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Header" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"MarginContainer_NoMargin"
+
+[node name="ReturnButton" type="Button" parent="MarginContainer/VBoxContainer/Header"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Return"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+alignment = 2
+
+[node name="ClearButton" type="Button" parent="MarginContainer/VBoxContainer/Header/HBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Clear"
+
+[node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer/Header/HBoxContainer"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+
+[node name="TestButton" type="Button" parent="MarginContainer/VBoxContainer/Header/HBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Test"
+
+[node name="Spacer2" type="Control" parent="MarginContainer/VBoxContainer/Header/HBoxContainer"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+
+[node name="LoadButton" type="Button" parent="MarginContainer/VBoxContainer/Header/HBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Load"
+
+[node name="ExportButton" type="Button" parent="MarginContainer/VBoxContainer/Header/HBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Export"
+
+[node name="Center" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="Footer" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"MarginContainer_NoMargin"
+
+[node name="PanelContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/Footer"]
+self_modulate = Color(0, 0, 0, 1)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"MarginContainer_NoMargin"
+
+[node name="ColorRect" type="ColorRect" parent="MarginContainer/VBoxContainer/Footer/PanelContainer"]
+layout_mode = 2
+color = Color(0, 0, 0, 0.165)
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/Footer/PanelContainer"]
+layout_mode = 2
+
+[node name="TileButtonsList" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Footer/PanelContainer/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+alignment = 1
+
+[node name="TileButton" parent="MarginContainer/VBoxContainer/Footer/PanelContainer/MarginContainer/TileButtonsList" instance=ExtResource("3_jvmvb")]
+layout_mode = 2
+
+[node name="TileButton2" parent="MarginContainer/VBoxContainer/Footer/PanelContainer/MarginContainer/TileButtonsList" instance=ExtResource("3_jvmvb")]
+layout_mode = 2
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Header/ReturnButton" to="." method="OnReturnButtonPressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Header/HBoxContainer/ClearButton" to="." method="OnClearButtonPressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Header/HBoxContainer/TestButton" to="." method="OnTestButtonPressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Header/HBoxContainer/LoadButton" to="." method="OnLoadButtonPressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Header/HBoxContainer/ExportButton" to="." method="OnExportButtonPressed"]

@@ -1,0 +1,45 @@
+[gd_scene load_steps=3 format=3 uid="uid://dki0mw3ivcpan"]
+
+[ext_resource type="Script" uid="uid://cx4ud7kllnv74" path="res://Scripts/Pages/Hud/HudPage.cs" id="1_qq32k"]
+[ext_resource type="PackedScene" uid="uid://dve15svx5m365" path="res://Scenes/Pages/Hud/Minimap.tscn" id="2_umu1c"]
+
+[node name="HudPageScene" type="CanvasLayer"]
+script = ExtResource("1_qq32k")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"MarginContainer_ScreenMargin"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="Header" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="QuitButton" type="Button" parent="MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+size_flags_vertical = 0
+text = "Quit"
+
+[node name="Minimap" parent="MarginContainer/VBoxContainer/Header" instance=ExtResource("2_umu1c")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Center" type="Control" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Footer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="TestingTrackLabel" type="Label" parent="MarginContainer/VBoxContainer/Footer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Testing track \"Foo\""
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Header/QuitButton" to="." method="OnQuitButtonPressed"]

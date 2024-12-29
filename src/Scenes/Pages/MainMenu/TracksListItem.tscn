@@ -1,0 +1,53 @@
+[gd_scene load_steps=3 format=3 uid="uid://bv5q0u73syp3r"]
+
+[ext_resource type="Script" uid="uid://dlcy2gyspuous" path="res://Scripts/Pages/MainMenu/TracksListItem.cs" id="1_y12de"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_rvuad"]
+font_size = 12
+outline_size = 8
+outline_color = Color(0, 0, 0, 0.5)
+
+[node name="TracksListItem" type="MarginContainer"]
+offset_right = 278.0
+offset_bottom = 70.0
+size_flags_horizontal = 3
+theme_type_variation = &"MarginContainer_NoMargin"
+script = ExtResource("1_y12de")
+
+[node name="Button" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="TrackNameLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "The FooBar Course"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="PlayerNameLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+self_modulate = Color(1, 1, 1, 0.8)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "By: Raul"
+label_settings = SubResource("LabelSettings_rvuad")
+
+[node name="PlaysLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+self_modulate = Color(1, 1, 1, 0.8)
+layout_mode = 2
+text = "100 Plays"
+label_settings = SubResource("LabelSettings_rvuad")

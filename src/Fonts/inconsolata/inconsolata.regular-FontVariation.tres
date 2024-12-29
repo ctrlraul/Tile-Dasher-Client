@@ -1,0 +1,9 @@
+[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://bnqx3rdo1mkmd"]
+
+[ext_resource type="FontFile" uid="uid://78dj68nupeak" path="res://Fonts/inconsolata/inconsolata.regular.ttf" id="1_7uyx3"]
+
+[resource]
+base_font = ExtResource("1_7uyx3")
+variation_embolden = 0.5
+spacing_top = -1
+spacing_bottom = -1

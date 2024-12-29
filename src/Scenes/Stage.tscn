@@ -1,0 +1,42 @@
+[gd_scene load_steps=7 format=3 uid="uid://cg5yqh3nxajy8"]
+
+[ext_resource type="Script" uid="uid://cvdh8lhvmjf1r" path="res://Scripts/Stage.cs" id="1_hece6"]
+[ext_resource type="PackedScene" uid="uid://oto4ogk1rwgj" path="res://Scenes/Character.tscn" id="2_cvjmr"]
+[ext_resource type="PackedScene" uid="uid://bbi8wj1ed7m3q" path="res://Scenes/TileGrid.tscn" id="3_vqi5e"]
+[ext_resource type="Texture2D" uid="uid://db8b5h2nj6emb" path="res://Images/Placeholders/Tile.svg" id="4_vqi5e"]
+[ext_resource type="Script" uid="uid://b0wb1c18wjbkr" path="res://Scripts/Pages/TrackEditor/TilePreview.cs" id="5_vqi5e"]
+[ext_resource type="Script" uid="uid://bsjcvdipsg7jt" path="res://Scripts/TileBehaviors.cs" id="6_o3sc7"]
+
+[node name="Stage" type="Node2D"]
+script = ExtResource("1_hece6")
+CharacterScene = ExtResource("2_cvjmr")
+
+[node name="LowerBoundaryIndicator" type="Line2D" parent="."]
+unique_name_in_owner = true
+points = PackedVector2Array(-20000, 0, 20000, 0)
+width = 5.0
+default_color = Color(1, 0, 0, 1)
+
+[node name="TileGrid" parent="." instance=ExtResource("3_vqi5e")]
+unique_name_in_owner = true
+
+[node name="CharactersContainer" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="Camera" type="Camera2D" parent="."]
+unique_name_in_owner = true
+scale = Vector2(1e-05, 1e-05)
+zoom = Vector2(0.7, 0.7)
+
+[node name="TilePreview" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+self_modulate = Color(1, 1, 1, 0.5)
+texture = ExtResource("4_vqi5e")
+script = ExtResource("5_vqi5e")
+
+[node name="TileBehaviors" type="Node2D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("6_o3sc7")
+
+[node name="Temp" type="Node2D" parent="."]
+unique_name_in_owner = true

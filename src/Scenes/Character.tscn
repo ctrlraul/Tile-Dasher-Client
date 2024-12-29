@@ -1,0 +1,77 @@
+[gd_scene load_steps=5 format=3 uid="uid://oto4ogk1rwgj"]
+
+[ext_resource type="Script" uid="uid://crt38jos2cwk" path="res://Scripts/Character.cs" id="1_jo2ib"]
+[ext_resource type="Texture2D" uid="uid://c3vnfnbhkts6s" path="res://Images/Placeholders/Character.png" id="2_jo2ib"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jo2ib"]
+size = Vector2(40, 60)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cvjmr"]
+size = Vector2(40, 130)
+
+[node name="Character" type="CharacterBody2D"]
+collision_mask = 6
+script = ExtResource("1_jo2ib")
+
+[node name="Gfx" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="Sprite2D" type="Sprite2D" parent="Gfx"]
+position = Vector2(0, -75)
+texture = ExtResource("2_jo2ib")
+
+[node name="NormalShape" type="CollisionShape2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0, -30)
+shape = SubResource("RectangleShape2D_jo2ib")
+
+[node name="JumpingShape" type="CollisionShape2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0, -65)
+shape = SubResource("RectangleShape2D_cvjmr")
+disabled = true
+
+[node name="RemoteTransform2D" type="RemoteTransform2D" parent="."]
+remote_path = NodePath("../UiContainer/Node2D")
+update_rotation = false
+
+[node name="UiContainer" type="Node" parent="."]
+
+[node name="Node2D" type="Node2D" parent="UiContainer"]
+
+[node name="CenterContainer" type="CenterContainer" parent="UiContainer/Node2D"]
+offset_top = 14.0
+offset_bottom = 14.0
+use_top_left = true
+
+[node name="NameLabel" type="Label" parent="UiContainer/Node2D/CenterContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Player"
+
+[node name="HitChecks" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="DownA" type="Marker2D" parent="HitChecks"]
+position = Vector2(-22, 10)
+
+[node name="DownB" type="Marker2D" parent="HitChecks"]
+position = Vector2(22, 10)
+
+[node name="UpA" type="Marker2D" parent="HitChecks"]
+position = Vector2(-22, -140)
+
+[node name="UpB" type="Marker2D" parent="HitChecks"]
+position = Vector2(22, -140)
+
+[node name="LeftA" type="Marker2D" parent="HitChecks"]
+position = Vector2(-30, -62)
+
+[node name="LeftB" type="Marker2D" parent="HitChecks"]
+position = Vector2(-30, 2)
+
+[node name="RightA" type="Marker2D" parent="HitChecks"]
+position = Vector2(30, -62)
+
+[node name="RightB" type="Marker2D" parent="HitChecks"]
+position = Vector2(30, 2)

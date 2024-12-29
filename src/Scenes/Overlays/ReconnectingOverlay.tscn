@@ -1,0 +1,52 @@
+[gd_scene load_steps=3 format=3 uid="uid://cg2i3kvvh1q86"]
+
+[ext_resource type="Texture2D" uid="uid://nexey7t82lr2" path="res://Images/Misc/Vignette.png" id="1_aayaw"]
+[ext_resource type="PackedScene" uid="uid://dpcb3uujp4lr3" path="res://Scenes/Misc/Spinner.tscn" id="1_xvguy"]
+
+[node name="ReconnectingOverlay" type="CanvasLayer"]
+layer = 20
+
+[node name="Vignette" type="TextureRect" parent="."]
+self_modulate = Color(0, 0, 0, 0.5)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_aayaw")
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="CenterContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CenterContainer/PanelContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Reconnecting..."
+
+[node name="Control" type="Control" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Spinner" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/Control" instance=ExtResource("1_xvguy")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 4

@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3 uid="uid://coiit3yqlbv76"]
+
+[ext_resource type="Script" uid="uid://d5a3cy7e6jx1" path="res://Scripts/Pages/Splash/SplashPage.cs" id="1_1bf36"]
+[ext_resource type="PackedScene" uid="uid://dpcb3uujp4lr3" path="res://Scenes/Misc/Spinner.tscn" id="2_bwlfp"]
+
+[node name="SplashPage" type="CanvasLayer"]
+script = ExtResource("1_1bf36")
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "Tile Dasher"
+horizontal_alignment = 1
+
+[node name="Spinner" parent="CenterContainer/VBoxContainer" instance=ExtResource("2_bwlfp")]
+layout_mode = 2
+size_flags_horizontal = 4

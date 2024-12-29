@@ -1,0 +1,84 @@
+[gd_scene load_steps=6 format=3 uid="uid://hevdhx6pid"]
+
+[ext_resource type="Texture2D" uid="uid://b2r234hmqwkdh" path="res://Images/Misc/GoogleLogo.svg" id="1_6m2jc"]
+[ext_resource type="Script" path="res://Scripts/Pages/Welcome/LoginButton.cs" id="1_tvqtb"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4bh31"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_on24c"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+
+[sub_resource type="LabelSettings" id="LabelSettings_gkfg4"]
+font_color = Color(0.172833, 0.172833, 0.172833, 1)
+
+[node name="LoginButton" type="MarginContainer"]
+auto_translate_mode = 1
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
+script = ExtResource("1_tvqtb")
+ProviderLogo = ExtResource("1_6m2jc")
+ProviderName = "Google"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+auto_translate_mode = 1
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Panel" type="PanelContainer" parent="HBoxContainer"]
+auto_translate_mode = 1
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_4bh31")
+
+[node name="LogoTextureRect" type="TextureRect" parent="HBoxContainer/Panel"]
+unique_name_in_owner = true
+auto_translate_mode = 1
+layout_mode = 2
+texture = ExtResource("1_6m2jc")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Panel2" type="PanelContainer" parent="HBoxContainer"]
+auto_translate_mode = 1
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_on24c")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/Panel2"]
+auto_translate_mode = 1
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Label" type="Label" parent="HBoxContainer/Panel2/HBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+text = "Login in With "
+label_settings = SubResource("LabelSettings_gkfg4")
+
+[node name="NameLabel" type="Label" parent="HBoxContainer/Panel2/HBoxContainer"]
+unique_name_in_owner = true
+auto_translate_mode = 1
+layout_mode = 2
+text = "Google"
+label_settings = SubResource("LabelSettings_gkfg4")
+
+[node name="Button" type="Button" parent="."]
+unique_name_in_owner = true
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+mouse_default_cursor_shape = 2

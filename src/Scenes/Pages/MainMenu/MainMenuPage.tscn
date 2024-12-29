@@ -1,0 +1,120 @@
+[gd_scene load_steps=4 format=3 uid="uid://cfm40ap18xmho"]
+
+[ext_resource type="Script" uid="uid://bww3s1aeocfmf" path="res://Scripts/Pages/MainMenu/MainMenuPage.cs" id="1_kliob"]
+[ext_resource type="Texture2D" uid="uid://c3vnfnbhkts6s" path="res://Images/Placeholders/Character.png" id="2_khycr"]
+[ext_resource type="PackedScene" uid="uid://bv5q0u73syp3r" path="res://Scenes/Pages/MainMenu/TracksListItem.tscn" id="3_a0kx2"]
+
+[node name="MainMenuPage" type="CanvasLayer"]
+script = ExtResource("1_kliob")
+TracksListItemScene = ExtResource("3_a0kx2")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"MarginContainer_ScreenMargin"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 40
+
+[node name="Left" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Header" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Left"]
+layout_mode = 2
+
+[node name="LogoutButton" type="Button" parent="MarginContainer/HBoxContainer/Left/Header"]
+layout_mode = 2
+theme_type_variation = &"Button_Floating"
+text = "Logout"
+
+[node name="PanelContainer" type="PanelContainer" parent="MarginContainer/HBoxContainer/Left/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Left/Header/PanelContainer"]
+layout_mode = 2
+
+[node name="PlayerLevelLabel" type="Label" parent="MarginContainer/HBoxContainer/Left/Header/PanelContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "10"
+
+[node name="PlayerNameLabel" type="Label" parent="MarginContainer/HBoxContainer/Left/Header/PanelContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Raul"
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/HBoxContainer/Left"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/HBoxContainer/Left/CenterContainer"]
+layout_mode = 2
+texture = ExtResource("2_khycr")
+
+[node name="Footer" type="MarginContainer" parent="MarginContainer/HBoxContainer/Left"]
+layout_mode = 2
+theme_type_variation = &"MarginContainer_NoMargin"
+
+[node name="TrackEditorButton" type="Button" parent="MarginContainer/HBoxContainer/Left/Footer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Track Editor"
+
+[node name="Right" type="PanelContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Right"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Right/VBoxContainer"]
+layout_mode = 2
+text = "My Tracks"
+horizontal_alignment = 1
+
+[node name="PanelContainer" type="PanelContainer" parent="MarginContainer/HBoxContainer/Right/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = &"PanelContainer_Nested"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/HBoxContainer/Right/VBoxContainer/PanelContainer"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer/Right/VBoxContainer/PanelContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_bottom = 0
+
+[node name="TracksList" type="GridContainer" parent="MarginContainer/HBoxContainer/Right/VBoxContainer/PanelContainer/ScrollContainer/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+columns = 2
+
+[node name="TracksListItem" parent="MarginContainer/HBoxContainer/Right/VBoxContainer/PanelContainer/ScrollContainer/MarginContainer/TracksList" instance=ExtResource("3_a0kx2")]
+layout_mode = 2
+
+[node name="TracksListItem2" parent="MarginContainer/HBoxContainer/Right/VBoxContainer/PanelContainer/ScrollContainer/MarginContainer/TracksList" instance=ExtResource("3_a0kx2")]
+layout_mode = 2
+
+[node name="TracksListItem3" parent="MarginContainer/HBoxContainer/Right/VBoxContainer/PanelContainer/ScrollContainer/MarginContainer/TracksList" instance=ExtResource("3_a0kx2")]
+layout_mode = 2
+
+[node name="TracksListItem4" parent="MarginContainer/HBoxContainer/Right/VBoxContainer/PanelContainer/ScrollContainer/MarginContainer/TracksList" instance=ExtResource("3_a0kx2")]
+layout_mode = 2
+
+[connection signal="pressed" from="MarginContainer/HBoxContainer/Left/Header/LogoutButton" to="." method="OnLogoutButtonPressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/Left/Footer/TrackEditorButton" to="." method="OnTrackEditorButtonPressed"]

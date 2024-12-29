@@ -1,0 +1,94 @@
+[gd_scene load_steps=7 format=3 uid="uid://dw356ow55yc2t"]
+
+[ext_resource type="Script" uid="uid://b8wdarv5dro61" path="res://Scripts/Overlays/ConsoleOverlay.cs" id="1_guf1s"]
+[ext_resource type="Shader" path="res://Shaders/BlurBackground.gdshader" id="2_v5c3q"]
+[ext_resource type="Texture2D" uid="uid://c1pi1xqmqf8s6" path="res://Images/Misc/Pixel.png" id="3_vb21d"]
+[ext_resource type="Script" uid="uid://vlbtxxsc71sn" path="res://Scripts/Tools/DraggableUi.cs" id="4_nws8g"]
+[ext_resource type="FontVariation" uid="uid://bnqx3rdo1mkmd" path="res://Fonts/inconsolata/inconsolata.regular-FontVariation.tres" id="5_v5c3q"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_eq35t"]
+shader = ExtResource("2_v5c3q")
+shader_parameter/amount = 1.0
+
+[node name="Console" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_guf1s")
+
+[node name="Window" type="MarginContainer" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -480.0
+offset_right = 480.0
+offset_bottom = 400.0
+grow_horizontal = 2
+mouse_filter = 0
+mouse_force_pass_scroll_events = false
+theme_type_variation = &"NoMargin"
+
+[node name="BlurBackground" type="TextureRect" parent="Window"]
+material = SubResource("ShaderMaterial_eq35t")
+layout_mode = 2
+texture = ExtResource("3_vb21d")
+
+[node name="ColorRect" type="ColorRect" parent="Window"]
+layout_mode = 2
+color = Color(0.17604, 0.1416, 0.24, 0.72549)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Window"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Header" type="MarginContainer" parent="Window/VBoxContainer" node_paths=PackedStringArray("target")]
+layout_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 13
+theme_override_constants/margin_left = 20
+script = ExtResource("4_nws8g")
+target = NodePath("../..")
+
+[node name="Label" type="Label" parent="Window/VBoxContainer/Header"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Console"
+
+[node name="AutoScrollCheckButton" type="CheckButton" parent="Window/VBoxContainer/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+button_pressed = true
+text = "Auto Scroll"
+
+[node name="MarginContainer" type="MarginContainer" parent="Window/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = &"MarginContainer_NoMargin"
+
+[node name="ColorRect" type="ColorRect" parent="Window/VBoxContainer/MarginContainer"]
+layout_mode = 2
+color = Color(0, 0, 0, 0.462745)
+
+[node name="MarginContainer" type="MarginContainer" parent="Window/VBoxContainer/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Window/VBoxContainer/MarginContainer/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+focus_mode = 2
+theme_override_fonts/normal_font = ExtResource("5_v5c3q")
+bbcode_enabled = true
+text = "Godot Engine v4.3.stable.mono.official.77dcf97d8 - https://godotengine.org
+OpenGL API 3.3.0 - Build 31.0.101.2111 - Compatibility - Using Device: Intel - Intel(R) UHD Graphics 630
+
+07:22:30                 Game | Server URL: http://localhost:3000/
+07:22:30                 Game | Steam user: Vitriolic (76561199281305807)
+07:22:34         UserSettings | Loaded
+07:22:36               Server | Server is reachable!
+07:22:36               Socket | Connected!
+07:22:36               Socket | * --> InitialData #1
+07:22:37               Socket | * <-- InitialDataSuccess #1
+07:22:37                 Game | Logged in!"
+selection_enabled = true

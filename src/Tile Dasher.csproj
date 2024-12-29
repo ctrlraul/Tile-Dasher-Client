@@ -1,0 +1,19 @@
+<Project Sdk="Godot.NET.Sdk/4.4.0-dev.6">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net7.0</TargetFramework>
+    <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'ios' ">net8.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <RootNamespace>TD</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Costasdev.Uuidv7" Version="1.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Scripts\Extensions\" />
+    <Folder Include="Scripts\Pages\HudPage\" />
+    <Folder Include="Scripts\Pages\TrackEditor\" />
+    <Folder Include="Scripts\Popups\" />
+  </ItemGroup>
+</Project>

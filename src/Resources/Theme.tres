@@ -1,0 +1,172 @@
+[gd_resource type="Theme" load_steps=26 format=3 uid="uid://bmggrspqbnnk7"]
+
+[ext_resource type="Texture2D" uid="uid://bvgvxa5xm2xxs" path="res://Images/Theme/Button.svg" id="1_7fawl"]
+[ext_resource type="Texture2D" uid="uid://c3kkakop7om8l" path="res://Images/Theme/Panel.svg" id="1_cjt73"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wv0mf"]
+atlas = ExtResource("1_7fawl")
+region = Rect2(84, 0, 80, 80)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_w8ige"]
+texture = SubResource("AtlasTexture_wv0mf")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8mqvo"]
+atlas = ExtResource("1_7fawl")
+region = Rect2(0, 0, 80, 80)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_74iis"]
+texture = SubResource("AtlasTexture_8mqvo")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nlp6v"]
+atlas = ExtResource("1_7fawl")
+region = Rect2(168, 0, 80, 80)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2magt"]
+texture = SubResource("AtlasTexture_nlp6v")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rij67"]
+atlas = ExtResource("1_7fawl")
+region = Rect2(84, 84, 80, 80)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_xbsuy"]
+texture = SubResource("AtlasTexture_rij67")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vmxg5"]
+atlas = ExtResource("1_7fawl")
+region = Rect2(0, 84, 80, 79)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_rij67"]
+texture = SubResource("AtlasTexture_vmxg5")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xbsuy"]
+atlas = ExtResource("1_7fawl")
+region = Rect2(168, 84, 80, 80)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dbcfw"]
+texture = SubResource("AtlasTexture_xbsuy")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iprfa"]
+atlas = ExtResource("1_cjt73")
+region = Rect2(0, 0, 80, 80)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_xjjwv"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+texture = SubResource("AtlasTexture_iprfa")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cey8k"]
+texture = SubResource("AtlasTexture_iprfa")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_twqg6"]
+atlas = ExtResource("1_cjt73")
+region = Rect2(168, 0, 80, 80)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_vmxg5"]
+texture = SubResource("AtlasTexture_twqg6")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ckrhp"]
+atlas = ExtResource("1_cjt73")
+region = Rect2(84, 0, 80, 80)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4vmya"]
+texture = SubResource("AtlasTexture_ckrhp")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n23ic"]
+atlas = ExtResource("1_cjt73")
+region = Rect2(168, 0, 80, 80)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_toudk"]
+texture = SubResource("AtlasTexture_n23ic")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6cmsu"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ib08w"]
+bg_color = Color(1, 1, 1, 1)
+
+[resource]
+BoxContainer/constants/separation = 10
+Button/colors/font_outline_color = Color(0, 0, 0, 0.5)
+Button/constants/outline_size = 8
+Button/styles/hover = SubResource("StyleBoxTexture_w8ige")
+Button/styles/normal = SubResource("StyleBoxTexture_74iis")
+Button/styles/pressed = SubResource("StyleBoxTexture_2magt")
+Button_Floating/base_type = &"Button"
+Button_Floating/styles/focus = null
+Button_Floating/styles/hover = SubResource("StyleBoxTexture_xbsuy")
+Button_Floating/styles/normal = SubResource("StyleBoxTexture_rij67")
+Button_Floating/styles/pressed = SubResource("StyleBoxTexture_dbcfw")
+GridContainer/constants/h_separation = 10
+GridContainer/constants/v_separation = 10
+Label/colors/font_outline_color = Color(0, 0, 0, 0.5)
+Label/constants/outline_size = 8
+MarginContainer/constants/margin_bottom = 10
+MarginContainer/constants/margin_left = 10
+MarginContainer/constants/margin_right = 10
+MarginContainer/constants/margin_top = 10
+MarginContainer_NoMargin/base_type = &"MarginContainer"
+MarginContainer_NoMargin/constants/margin_bottom = 0
+MarginContainer_NoMargin/constants/margin_left = 0
+MarginContainer_NoMargin/constants/margin_right = 0
+MarginContainer_NoMargin/constants/margin_top = 0
+MarginContainer_ScreenMargin/base_type = &"MarginContainer"
+MarginContainer_ScreenMargin/constants/margin_bottom = 40
+MarginContainer_ScreenMargin/constants/margin_left = 40
+MarginContainer_ScreenMargin/constants/margin_right = 40
+MarginContainer_ScreenMargin/constants/margin_top = 40
+Panel/styles/panel = SubResource("StyleBoxTexture_xjjwv")
+PanelContainer/styles/panel = SubResource("StyleBoxTexture_cey8k")
+PanelContainer_Nested/base_type = &"PanelContainer"
+PanelContainer_Nested/styles/panel = SubResource("StyleBoxTexture_vmxg5")
+Panel_Nested/base_type = &"Panel"
+Panel_Nested/styles/panel = SubResource("StyleBoxTexture_4vmya")
+Panel_NestedDark/base_type = &"Panel"
+Panel_NestedDark/styles/panel = SubResource("StyleBoxTexture_toudk")
+ProgressBar/styles/background = SubResource("StyleBoxFlat_6cmsu")
+ProgressBar/styles/fill = SubResource("StyleBoxFlat_ib08w")

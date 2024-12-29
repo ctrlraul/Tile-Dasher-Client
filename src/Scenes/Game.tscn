@@ -1,0 +1,20 @@
+[gd_scene load_steps=7 format=3 uid="uid://6c14qtjv84vq"]
+
+[ext_resource type="Script" uid="uid://bjy8v372vpv3c" path="res://Scripts/Game.cs" id="1_iukft"]
+[ext_resource type="Texture2D" uid="uid://c1moevx5wq0oi" path="res://Images/Misc/MissingTexture.svg" id="2_b2bpf"]
+[ext_resource type="PackedScene" path="res://Scenes/Overlays/ReconnectingOverlay.tscn" id="2_gl6un"]
+[ext_resource type="Texture2D" uid="uid://dxk6rejvf7v03" path="res://Images/Tiles/Tiles.png" id="3_7lihs"]
+[ext_resource type="PackedScene" uid="uid://dw356ow55yc2t" path="res://Scenes/Overlays/ConsoleOverlay.tscn" id="3_j5yw3"]
+[ext_resource type="PackedScene" uid="uid://cheyqwcerok5i" path="res://Scenes/Dot.tscn" id="4_7lihs"]
+
+[node name="Game" type="Node"]
+script = ExtResource("1_iukft")
+MissingTexture = ExtResource("2_b2bpf")
+TileSet = ExtResource("3_7lihs")
+DotScene = ExtResource("4_7lihs")
+
+[node name="ReconnectingOverlay" parent="." instance=ExtResource("2_gl6un")]
+unique_name_in_owner = true
+visible = false
+
+[node name="Console" parent="." instance=ExtResource("3_j5yw3")]
