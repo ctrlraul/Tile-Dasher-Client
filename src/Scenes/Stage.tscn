@@ -2,14 +2,15 @@
 
 [ext_resource type="Script" uid="uid://cvdh8lhvmjf1r" path="res://Scripts/Stage.cs" id="1_hece6"]
 [ext_resource type="PackedScene" uid="uid://oto4ogk1rwgj" path="res://Scenes/Character.tscn" id="2_cvjmr"]
+[ext_resource type="PackedScene" uid="uid://b8m3rusv3btgx" path="res://Scenes/Particles/CrumbleParticles.tscn" id="3_tifnw"]
 [ext_resource type="PackedScene" uid="uid://bbi8wj1ed7m3q" path="res://Scenes/TileGrid.tscn" id="3_vqi5e"]
 [ext_resource type="Texture2D" uid="uid://db8b5h2nj6emb" path="res://Images/Placeholders/Tile.svg" id="4_vqi5e"]
 [ext_resource type="Script" uid="uid://b0wb1c18wjbkr" path="res://Scripts/Pages/TrackEditor/TilePreview.cs" id="5_vqi5e"]
-[ext_resource type="Script" uid="uid://bsjcvdipsg7jt" path="res://Scripts/TileBehaviors.cs" id="6_o3sc7"]
 
 [node name="Stage" type="Node2D"]
 script = ExtResource("1_hece6")
 CharacterScene = ExtResource("2_cvjmr")
+CrumbleParticlesScene = ExtResource("3_tifnw")
 
 [node name="LowerBoundaryIndicator" type="Line2D" parent="."]
 unique_name_in_owner = true
@@ -33,10 +34,6 @@ unique_name_in_owner = true
 self_modulate = Color(1, 1, 1, 0.5)
 texture = ExtResource("4_vqi5e")
 script = ExtResource("5_vqi5e")
-
-[node name="TileBehaviors" type="Node2D" parent="."]
-unique_name_in_owner = true
-script = ExtResource("6_o3sc7")
 
 [node name="Temp" type="Node2D" parent="."]
 unique_name_in_owner = true

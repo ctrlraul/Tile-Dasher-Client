@@ -9,11 +9,11 @@ public partial class WelcomePage : Page
 
 	private void OnLoginWithGoogleButtonPressed()
 	{
-		Server.LoginWithGoogle();
+		AuthManager.LoginWithGoogle();
 	}
 
 	private void OnLoginAsGuestButtonPressed()
 	{
-		Server.LoginAsGuest();
+		AuthManager.LoginAsGuest();
 	}
 }

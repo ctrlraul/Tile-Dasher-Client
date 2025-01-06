@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Godot;
 using TD.Exceptions;
 
@@ -10,6 +11,7 @@ public partial class PopupsManager : Node
     public bool HasPopups => GetChildCount() > 0;
     
     private static readonly PackedScene DialogPopupScene = GD.Load<PackedScene>("res://Scenes/Popups/DialogPopup.tscn");
+    private static readonly PackedScene SelectTrackPopupScene = GD.Load<PackedScene>("res://Scenes/Popups/TracksPopup.tscn");
 
 
     public override void _Ready()
@@ -40,6 +42,25 @@ public partial class PopupsManager : Node
             .AddButton("Ok")
             .SetCancellable(true);
 
+        return popup;
+    }
+    
+    public static async Task PleaseWait(Task task, string title = "Please wait...")
+    {
+        GenericPopup popup = Dialog()
+            .SetTitle(title)
+            .SetSpinner(true)
+            .SetCancellable(false);
+
+        await task;
+        
+        popup.Remove();
+    }
+
+    public static TracksPopup SelectTrack()
+    {
+        TracksPopup popup = SelectTrackPopupScene.Instantiate<TracksPopup>();
+        Instance.AddChild(popup);
         return popup;
     }
 }

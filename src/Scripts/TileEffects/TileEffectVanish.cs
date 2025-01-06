@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Godot;
-using TD.Models;
 
 namespace TD.TileEffects;
 
-public class TileEffectVanish : ITileEffect
+public class TileEffectVanish : TileEffect
 {
 	private const int VanishTimeMs = 500;
 	private const int WaitTimeMs = 2000;
@@ -88,19 +87,19 @@ public class TileEffectVanish : ITileEffect
 	private static readonly Dictionary<Vector2I, OngoingEffect> OngoingEffects = new();
 	
 	
-	public bool NonStatic { get; private set; } = true;
+	public override bool PopOff { get; } = true;
 	
-	public void Trigger(Tile tile, Vector2I coord, Character character)
+	public override void Trigger(TriggerData data)
 	{
-		if (OngoingEffects.TryGetValue(coord, out OngoingEffect effect))
+		if (OngoingEffects.TryGetValue(data.coord, out OngoingEffect effect))
 		{
 			effect.ReTrigger();
 		}
 		else
 		{
-			effect = new OngoingEffect(coord);
-			effect.Finished += () => OngoingEffects.Remove(coord);
-			OngoingEffects.Add(coord, effect);
+			effect = new OngoingEffect(data.coord);
+			effect.Finished += () => OngoingEffects.Remove(data.coord);
+			OngoingEffects.Add(data.coord, effect);
 		}
 	}
 }

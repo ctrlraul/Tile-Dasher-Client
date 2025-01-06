@@ -36,30 +36,19 @@ public class Cherry
 	{
 		string path = GetPath();
 		
-		Logger.Log($"* --> [{HttpMethod.Get} {path}]");
+		LogSend(HttpMethod.Get, path);
 		
 		Result<T> result = new();
 
 		try
 		{
 			HttpResponseMessage response = await Client.GetAsync(path);
-			string content = await response.Content.ReadAsStringAsync();
-
-			if (!response.IsSuccessStatusCode)
-			{
-				string code = $"{response.StatusCode} ({response.ReasonPhrase})";
-				
-				if (string.IsNullOrEmpty(content))
-					throw new Exception(code);
-				
-				throw new Exception($"{code}: {content}");
-			}
-			
+			string content = await GetResponseContentOrThrow(response);
 			result.data = JsonConvert.DeserializeObject<T>(content);
 		}
 		catch (Exception exception)
 		{
-			Logger.Log($"Error [{HttpMethod.Get} {path}]: {exception.Message}");
+			LogError(HttpMethod.Get, path, exception.Message);
 			result.error = exception.Message;
 		}
 
@@ -70,40 +59,71 @@ public class Cherry
 	{
 		string path = GetPath();
 
-		Logger.Log($"* --> [{HttpMethod.Post} {path}]");
+		LogSend(HttpMethod.Post, path);
 
 		Result<T> result = new();
 
 		try
 		{
-			string json = JsonConvert.SerializeObject(data);
-			StringContent payload = new(json, Encoding.UTF8, "application/json");
-			HttpResponseMessage response = await Client.PostAsync(path, payload);
-			string content = await response.Content.ReadAsStringAsync();
-			
-			Logger.Log("content:", content);
-			
-			if (!response.IsSuccessStatusCode)
-			{
-				string code = $"{response.StatusCode} ({response.ReasonPhrase})";
-
-				if (string.IsNullOrEmpty(content))
-					throw new Exception(code);
-
-				throw new Exception($"{code}: {content}");
-			}
-
+			HttpResponseMessage response = await Client.PostAsync(path, ToJsonPayload(data));
+			string content = await GetResponseContentOrThrow(response);
 			result.data = JsonConvert.DeserializeObject<T>(content);
 		}
 		catch (Exception exception)
 		{
-			Logger.Log($"Error [{HttpMethod.Post} {path}]: {exception.Message}");
+			LogError(HttpMethod.Post, path, exception.Message);
 			result.error = exception.Message;
 		}
 
 		return result;
 	}
 
+	public async Task<Result<T>> Put<T>(object data)
+	{
+		string path = GetPath();
+
+		LogSend(HttpMethod.Put, path);
+
+		Result<T> result = new();
+
+		try
+		{
+			HttpResponseMessage response = await Client.PutAsync(path, ToJsonPayload(data));
+			string content = await GetResponseContentOrThrow(response);
+			result.data = JsonConvert.DeserializeObject<T>(content);
+		}
+		catch (Exception exception)
+		{
+			LogError(HttpMethod.Put, path, exception.Message);
+			result.error = exception.Message;
+		}
+
+		return result;
+	}
+
+	public async Task<Result<T>> Delete<T>()
+	{
+		string path = GetPath();
+
+		LogSend(HttpMethod.Delete, path);
+
+		Result<T> result = new();
+
+		try
+		{
+			HttpResponseMessage response = await Client.DeleteAsync(path);
+			string content = await GetResponseContentOrThrow(response);
+			result.data = JsonConvert.DeserializeObject<T>(content);
+		}
+		catch (Exception exception)
+		{
+			LogError(HttpMethod.Delete, path, exception.Message);
+			result.error = exception.Message;
+		}
+
+		return result;
+	}
+	
 
 	private string GetPath()
 	{
@@ -118,5 +138,38 @@ public class Cherry
 	private string ToQuery(KeyValuePair<string, object> kvp)
 	{
 		return HttpUtility.UrlEncode(kvp.Key) + "=" + HttpUtility.UrlEncode(kvp.Value.ToString());
+	}
+	
+	private async Task<string> GetResponseContentOrThrow(HttpResponseMessage response)
+	{
+		string content = await response.Content.ReadAsStringAsync();
+		
+		if (response.IsSuccessStatusCode)
+			return content;
+		
+		string code = $"{response.StatusCode} ({response.ReasonPhrase})";
+
+		Exception exception = string.IsNullOrEmpty(content)
+			? new Exception(code)
+			: new Exception($"{code}: {content}");
+
+		throw exception;
+	}
+
+	private StringContent ToJsonPayload(object data)
+	{
+		string json = JsonConvert.SerializeObject(data);
+		StringContent payload = new(json, Encoding.UTF8, "application/json");
+		return payload;
+	}
+	
+	private void LogSend(HttpMethod method, string path)
+	{
+		Logger.Log($"* --> [{method} {path}]");
+	}
+	
+	private void LogError(HttpMethod method, string path, string message)
+	{
+		Logger.Log($"Error [{method} {path}]: {message}");
 	}
 }

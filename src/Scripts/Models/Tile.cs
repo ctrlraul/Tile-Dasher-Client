@@ -4,6 +4,12 @@ using Newtonsoft.Json;
 
 namespace TD.Models;
 
+public class TileEffectConfig
+{
+	public string trigger;
+	public string effect;
+}
+
 [JsonObject]
 public class Tile
 {
@@ -13,7 +19,9 @@ public class Tile
 	public int atlasY;
 	public int matter;
 	public bool safe;
-	public Dictionary<string, List<string>> effects;
+	public float friction;
+	public bool listed;
+	public List<TileEffectConfig> effects;
 
 	[JsonIgnore] public Vector2I AtlasCoords => new(atlasX, atlasY);
 }

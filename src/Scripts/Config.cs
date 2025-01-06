@@ -7,7 +7,8 @@ namespace TD;
 [JsonObject]
 public class Config
 {
-	public string serverUrl = "http://localhost:3000/";
+	public string serverUrl = "http://localhost:4200/";
+	public string webSocketServerUrl = "ws://localhost:4201";
 
 
 	public int tileSize = 80;

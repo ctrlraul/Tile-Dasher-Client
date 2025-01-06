@@ -13,44 +13,32 @@ using TD.Popups;
 
 namespace TD.Pages.TrackEditor;
 
-public class TrackEditorData
-{
-	public Track track;
-}
-
 public partial class TrackEditorPage : Page
 {
 	public static PackedScene Scene = GD.Load<PackedScene>("res://Scenes/Pages/TrackEditor/TrackEditorPage.tscn");
 
-	[Export]
-	private PackedScene TileButtonScene;
+	[Export] private PackedScene TileButtonScene;
 
+	private LineEdit TrackNameInput;
 	private Control TileButtonsList;
 	
+	private static Tile CurrentTile;
+	private static Track TrackCache; // Used to remember the track after testing it
 	private Vector2 cameraVelocity;
-	private Tile currentTile;
 	private bool placingTiles;
-
-	private TrackEditorData Data;
+	private bool hasUnsavedChanges;
 
 
 	public override void _Ready()
 	{
 		base._Ready();
+		
+		TrackNameInput = GetNode<LineEdit>("%TrackNameInput");
 		TileButtonsList = GetNode<Control>("%TileButtonsList");
 
-		TileButtonsList.QueueFreeChildren();
-		foreach (Tile tile in Server.Tiles)
-		{
-			TileButton button = TileButtonScene.Instantiate<TileButton>();
-			TileButtonsList.AddChild(button);
-			button.SetTile(tile);
-			button.Pressed += () => SetCurrentTile(tile);
-		}
+		UpdateTileButtons();
 		
 		Stage.Camera.Position = Vector2.Zero;
-		
-		SetCurrentTile(Server.Tiles[0]);
 	}
 	
 	public override void _PhysicsProcess(double delta)
@@ -63,7 +51,7 @@ public partial class TrackEditorPage : Page
 		cameraVelocity *= 0.9f;
 		
 		if (placingTiles && cameraVelocity.Length() > 0.01)
-			Stage.TileGrid.SetTile(Stage.TilePreview.Coord, currentTile);
+			Stage.TileGrid.SetTile(Stage.TilePreview.Coord, CurrentTile);
 	}
 
 	public override void _UnhandledInput(InputEvent @event)
@@ -77,14 +65,14 @@ public partial class TrackEditorPage : Page
 				placingTiles = mouseButtonEvent.Pressed;
 			
 				if (placingTiles)
-					Stage.TileGrid.SetTile(Stage.TilePreview.Coord, currentTile);
+					Stage.TileGrid.SetTile(Stage.TilePreview.Coord, CurrentTile);
 				break;
 			}
 			
 			case InputEventMouseMotion:
 			{
 				if (placingTiles)
-					Stage.TileGrid.SetTile(Stage.TilePreview.Coord, currentTile);
+					Stage.TileGrid.SetTile(Stage.TilePreview.Coord, CurrentTile);
 				break;
 			}
 		}
@@ -103,23 +91,44 @@ public partial class TrackEditorPage : Page
 	}
 
 
-	public override void SetData(object data)
+	public override void Refresh()
 	{
-		Data = (TrackEditorData)data ?? new TrackEditorData();
+		base.Refresh();
+        
+		if (CurrentTile is null)
+			SetCurrentTile(Game.Tiles[0]);
+		
+		if (TrackCache is null)
+			NewTrack();
+		else
+			LoadTrack(TrackCache);
+	}
 
-		if (Data.track is not null)
-			Stage.LoadTrack(Data.track);
+	private void UpdateTileButtons()
+	{
+		TileButtonsList.QueueFreeChildren();
+		
+		foreach (Tile tile in Game.Tiles)
+		{
+			if (!tile.listed)
+				continue;
+            
+			TileButton button = TileButtonScene.Instantiate<TileButton>();
+			TileButtonsList.AddChild(button);
+			button.SetTile(tile);
+			button.Pressed += () => SetCurrentTile(tile);
+		}
 	}
 	
 
 	private void SetCurrentTile(Tile tile)
 	{
-		currentTile = tile;
+		CurrentTile = tile;
 		
 		foreach (TileButton button in TileButtonsList.GetChildren().Cast<TileButton>())
-			button.SetSelected(button.Tile == currentTile);
+			button.SetSelected(button.Tile == CurrentTile);
 		
-		Stage.TilePreview.SetTile(currentTile);
+		Stage.TilePreview.SetTile(CurrentTile);
 	}
 	
 	private async Task<string> SaveTrackLocally()
@@ -153,35 +162,86 @@ public partial class TrackEditorPage : Page
 		return direction.Normalized();
 	}
 
+	private async void LoadTrack(string trackId)
+	{
+		Task<Result<Track>> task = Socket.SendGetTrack(trackId);
+
+		if (!task.IsCompleted)
+		{
+			await PopupsManager.PleaseWait(task, "Loading track...");
+			
+			if (task.Result.error != null)
+			{
+				PopupsManager.GenericErrorDialog("Error loading track!", task.Result.error);
+				return;
+			}
+		}
+
+		LoadTrack(task.Result.data);
+	}
+
+	private void LoadTrack(Track track)
+	{
+		TrackNameInput.Text = track.name;
+		Stage.LoadTrackToEdit(track);
+	}
+
+	private Track ExportTrack()
+	{
+		Track track = Stage.ExportTrack();
+		track.name = TrackNameInput.Text;
+		return track;
+	}
+
+	private void NewTrack()
+	{
+		TrackNameInput.Text = "New Track " + GenerateRandomCode();
+		Stage.Clear();
+	}
+	
+	public static string GenerateRandomCode()
+	{
+		const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+		Random random = new();
+		char[] result = new char[4];
+
+		for (int i = 0; i < result.Length; i++)
+		{
+			result[i] = chars[random.Next(chars.Length)];
+		}
+
+		return new string(result);
+	}
+
 
 	public void OnReturnButtonPressed()
 	{
 		Game.SetPage(MainMenuPage.Scene);
 	}
 
-	private async void OnLoadButtonPressed()
+	private void OnLoadButtonPressed()
 	{
-		Result<Track> result = await Server.SendGetTrack("0193f7d5-2c66-758d-9ac5-ab7f858aaaea");
+		TracksPopup popup = PopupsManager.SelectTrack();
+		popup.Selected += LoadTrack;
 
-		if (result.error == null)
-			Stage.LoadTrack(result.data);
+		foreach (TrackInfo info in Game.Player.trackInfos)
+			popup.AddTrack(info);
 	}
 
-	private async void OnExportButtonPressed()
+	private async void OnSaveButtonPressed()
 	{
-		Track track = Stage.ExportTrack();
+		Track track = ExportTrack();
         
 		try
 		{
-			Result<Track> result;
-
-			if (Server.Player.trackInfos.Any(info => info.id == track.id))
-				result = await Server.SendTrackUpdate(track);
-			else
-				result = await Server.SendTrackCreate(track);
-
-			if (result.error is not null)
-				throw new Exception(result.error);
+			Task<Result<Track>> task = Game.Player.trackInfos.Any(info => info.id == track.id)
+				? Socket.SendTrackUpdate(track)
+				: Socket.SendTrackCreate(track);
+			
+			await PopupsManager.PleaseWait(task, "Saving track...");
+            
+			if (task.Result.error is not null)
+				throw new Exception(task.Result.error);
 			
 			// string filePath = await SaveTrackLocally();
 			//
@@ -194,21 +254,28 @@ public partial class TrackEditorPage : Page
 		}
 		catch (Exception exception)
 		{
-			PopupsManager.GenericErrorDialog("Error exporting track!", exception.Message);
+			PopupsManager.GenericErrorDialog("Error saving track!", exception.Message);
 		}
 	}
 
-	private void OnClearButtonPressed()
+	private void OnNewButtonPressed()
 	{
-		Stage.Clear();
+		PopupsManager.Dialog()
+			.SetTitle("New Track")
+			.SetMessage("Don't do this if you have unsaved changes you want to keep")
+			.AddButton("Cancel")
+			.AddButton("Ok", NewTrack)
+			.SetCancellable(true);
 	}
 
 	private void OnTestButtonPressed()
 	{
+		TrackCache = ExportTrack();
+		
 		HudData hudData = new()
 		{
-			track = Stage.ExportTrack(),
-			testing = true,
+			track = TrackCache,
+			testing = true
 		};
 		
 		Game.SetPage(HudPage.Scene, hudData);

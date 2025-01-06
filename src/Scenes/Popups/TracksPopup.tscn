@@ -1,0 +1,76 @@
+[gd_scene load_steps=8 format=3 uid="uid://diclkgp72r81"]
+
+[ext_resource type="PackedScene" uid="uid://lym42cvdb0b3" path="res://Scenes/Popups/GenericPopup.tscn" id="1_tmfup"]
+[ext_resource type="Script" uid="uid://v2p7vqaw3o5q" path="res://Scripts/Popups/TracksPopup.cs" id="2_pyiky"]
+[ext_resource type="Texture2D" uid="uid://nexey7t82lr2" path="res://Images/Misc/Vignette.png" id="3_23hfr"]
+[ext_resource type="PackedScene" uid="uid://cwjtj46hn8uvd" path="res://Scenes/Lists/TracksListItem.tscn" id="4_2jcmr"]
+[ext_resource type="Shader" path="res://Shaders/BlurBackground.gdshader" id="5_23hfr"]
+[ext_resource type="Texture2D" uid="uid://c1pi1xqmqf8s6" path="res://Images/Misc/Pixel.png" id="6_2jcmr"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gdpa1"]
+shader = ExtResource("5_23hfr")
+shader_parameter/amount = 2.0
+
+[node name="TracksPopup" instance=ExtResource("1_tmfup")]
+script = ExtResource("2_pyiky")
+TracksListItemScene = ExtResource("4_2jcmr")
+
+[node name="Vignette" type="TextureRect" parent="Control/Background" index="0"]
+self_modulate = Color(0, 0, 0, 0.5)
+layout_mode = 2
+texture = ExtResource("3_23hfr")
+
+[node name="Window" parent="Control/Scaler/CenterContainer" index="0"]
+custom_minimum_size = Vector2(500, 0)
+
+[node name="Blur" type="TextureRect" parent="Control/Scaler/CenterContainer/Window/Content" index="0"]
+material = SubResource("ShaderMaterial_gdpa1")
+layout_mode = 2
+texture = ExtResource("6_2jcmr")
+
+[node name="PanelContainer" type="PanelContainer" parent="Control/Scaler/CenterContainer/Window/Content" index="1"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/Scaler/CenterContainer/Window/Content/PanelContainer" index="0"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Control/Scaler/CenterContainer/Window/Content/PanelContainer/VBoxContainer" index="0"]
+layout_mode = 2
+text = "My Tracks"
+horizontal_alignment = 1
+
+[node name="PanelContainer" type="PanelContainer" parent="Control/Scaler/CenterContainer/Window/Content/PanelContainer/VBoxContainer" index="1"]
+custom_minimum_size = Vector2(0, 400)
+layout_mode = 2
+theme_type_variation = &"PanelContainer_Nested_Dark"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Control/Scaler/CenterContainer/Window/Content/PanelContainer/VBoxContainer/PanelContainer" index="0"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/Scaler/CenterContainer/Window/Content/PanelContainer/VBoxContainer/PanelContainer/ScrollContainer" index="0"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_bottom = 0
+
+[node name="TracksList" type="VBoxContainer" parent="Control/Scaler/CenterContainer/Window/Content/PanelContainer/VBoxContainer/PanelContainer/ScrollContainer/MarginContainer" index="0"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="TracksListItem" parent="Control/Scaler/CenterContainer/Window/Content/PanelContainer/VBoxContainer/PanelContainer/ScrollContainer/MarginContainer/TracksList" index="0" instance=ExtResource("4_2jcmr")]
+layout_mode = 2
+
+[node name="TracksListItem2" parent="Control/Scaler/CenterContainer/Window/Content/PanelContainer/VBoxContainer/PanelContainer/ScrollContainer/MarginContainer/TracksList" index="1" instance=ExtResource("4_2jcmr")]
+layout_mode = 2
+
+[node name="CancelButton" type="Button" parent="Control/Scaler/CenterContainer/Window/Content/PanelContainer/VBoxContainer" index="2"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Close"
+
+[connection signal="pressed" from="Control/Scaler/CenterContainer/Window/Content/PanelContainer/VBoxContainer/CancelButton" to="." method="Remove"]

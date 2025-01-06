@@ -106,6 +106,24 @@ public partial class TileGrid : Node2D
 		}
 	}
 
+	public void MoveTile(Vector2I from, Vector2I to)
+	{
+		GridReady = false;
+		RectReady = false;
+		
+		Vector2 toPosition = Game.GridToWorld(to);
+
+		Cell cell = Data.GetValueOrDefault(from);
+		Data.Remove(from);
+		Data.Add(to, cell);
+		cell.sprite.Position = toPosition;
+		
+		CollisionShape2D collisionShape = GetCollisionShape(from);
+		IndividualCollisionShapes.Remove(from);
+		IndividualCollisionShapes.Add(to, collisionShape);
+		collisionShape.Position = toPosition;
+	}
+
 	public Tile GetTile(Vector2I coord)
 	{
 		return Data.GetValueOrDefault(coord)?.tile;
@@ -198,6 +216,21 @@ public partial class TileGrid : Node2D
 		return Grid;
 	}
 	
+	public long[,] GetIdsGrid()
+	{
+		Rect2I rect = GetUsedRect();
+	
+		long[,] grid = new long[rect.Size.Y + 1, rect.Size.X + 1];
+
+		foreach (Vector2I coord in Data.Keys)
+		{
+			if (Data[coord].tile.matter == Matter.Stone)
+				grid[coord.Y - rect.Position.Y, coord.X  - rect.Position.X] = Data[coord].tile.id;
+		}
+
+		return grid;
+	}
+	
 	
 	public void GenerateCollisionShapes()
 	{
@@ -207,18 +240,20 @@ public partial class TileGrid : Node2D
 		Rect2I rect = GetUsedRect();
 		Vector2 offset = GetUsedRect().Position * -1 + Vector2.One * 0.5f;
 		bool[,] solidGrid = new bool[rect.Size.Y + 1, rect.Size.X + 1];
+		bool[,] liquidGrid = new bool[rect.Size.Y + 1, rect.Size.X + 1];
 		List<Vector2I> individualTiles = new();
 		
 		foreach (Vector2I coord in Data.Keys)
 		{
 			Tile tile = Data[coord].tile;
 
-			if (TilesManager.IsStatic(tile))
+			if (!TilesManager.PopsOff(tile))
 			{
 				bool[,] grid = tile.matter switch
 				{
 					Matter.Air => null,
 					Matter.Stone => solidGrid,
+					Matter.Water => liquidGrid,
 					_ => null
 				};
 				
@@ -237,6 +272,13 @@ public partial class TileGrid : Node2D
 			CollisionBody.AddChild(collisionPolygon);
 			collisionPolygon.Polygon = polygon.Select(point => (point - offset) * Game.Config.tileSize).ToArray();
 		}
+		
+		// foreach (Vector2[] polygon in GridToPoly.Generate(liquidGrid))
+		// {
+		// 	CollisionPolygon2D collisionPolygon = new();
+		// 	CollisionBody.AddChild(collisionPolygon);
+		// 	collisionPolygon.Polygon = polygon.Select(point => (point - offset) * Game.Config.tileSize).ToArray();
+		// }
 		
 		foreach (Vector2I coord in individualTiles)
 		{

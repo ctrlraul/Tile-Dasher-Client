@@ -1,14 +1,14 @@
-using Godot;
-using TD.Models;
-
 namespace TD.TileEffects;
 
-public class TileEffectBreak : ITileEffect
+public class TileEffectBreak : TileEffect
 {
-	public bool NonStatic { get; private set; } = true;
-	
-	public void Trigger(Tile tile, Vector2I coord, Character character)
+	public override bool PopOff { get; } = true;
+
+	public override void Trigger(TriggerData data)
 	{
-		Stage.TileGrid.RemoveTile(coord);
+		Stage.AddCrumbleParticles(data.coord);
+		Stage.AddCrumbleParticles(data.coord);
+		Stage.AddCrumbleParticles(data.coord);
+		Stage.TileGrid.RemoveTile(data.coord);
 	}
 }

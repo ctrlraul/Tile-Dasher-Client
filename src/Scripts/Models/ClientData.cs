@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace TD.Models;
 
 [JsonObject]
-public class InitialData
+public class ClientData
 {
 	public List<Tile> tiles;
 	public Player player;

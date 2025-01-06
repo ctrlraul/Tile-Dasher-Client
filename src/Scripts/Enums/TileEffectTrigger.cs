@@ -2,6 +2,7 @@ namespace TD.Enums;
 
 public abstract class TileEffectTrigger
 {
+	public const string Init = "Init";
 	public const string Any = "Any";
 	public const string Bump = "Bump";
 	public const string Stand = "Stand";

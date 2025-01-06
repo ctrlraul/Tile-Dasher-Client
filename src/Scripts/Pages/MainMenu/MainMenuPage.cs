@@ -25,7 +25,6 @@ public partial class MainMenuPage : Page
         PlayerNameLabel = GetNode<Label>("%PlayerNameLabel");
         PlayerLevelLabel = GetNode<Label>("%PlayerLevelLabel");
         TracksList = GetNode<Control>("%TracksList");
-        Refresh();
     }
     
 
@@ -33,12 +32,12 @@ public partial class MainMenuPage : Page
     {
         base.Refresh();
         
-        PlayerNameLabel.Text = Server.Player.name;
-        PlayerLevelLabel.Text = Server.Player.level.ToString();
+        PlayerNameLabel.Text = Game.Player.name;
+        PlayerLevelLabel.Text = Game.Player.level.ToString();
         
         TracksList.QueueFreeChildren();
 
-        foreach (TrackInfo trackInfo in Server.Player.trackInfos)
+        foreach (TrackInfo trackInfo in Game.Player.trackInfos)
         {
             TracksListItem listItem = TracksListItemScene.Instantiate<TracksListItem>();
             TracksList.AddChild(listItem);
@@ -50,7 +49,7 @@ public partial class MainMenuPage : Page
 
     private async void PlayTrack(string id)
     {
-        Result<Track> result = await Server.SendPlayTrack(id);
+        Result<Track> result = await Socket.SendPlayTrack(id);
 
         if (result.error is not null)
         {
@@ -64,7 +63,7 @@ public partial class MainMenuPage : Page
 
     private void OnLogoutButtonPressed()
     {
-        Server.Logout();
+        AuthManager.Logout();
     }
 
     private void OnTrackEditorButtonPressed()

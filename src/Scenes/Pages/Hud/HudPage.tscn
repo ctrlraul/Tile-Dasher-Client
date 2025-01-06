@@ -20,7 +20,11 @@ layout_mode = 2
 [node name="Header" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="QuitButton" type="Button" parent="MarginContainer/VBoxContainer/Header"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="QuitButton" type="Button" parent="MarginContainer/VBoxContainer/Header/HBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 0
 text = "Quit"
@@ -33,6 +37,15 @@ layout_mode = 2
 layout_mode = 2
 size_flags_vertical = 3
 
+[node name="FinishList" type="RichTextLabel" parent="MarginContainer/VBoxContainer/Center"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 0
+offset_right = 223.0
+offset_bottom = 46.0
+text = "00:00:00.0000 - Raul"
+fit_content = true
+
 [node name="Footer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 alignment = 1
@@ -42,4 +55,4 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Testing track \"Foo\""
 
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Header/QuitButton" to="." method="OnQuitButtonPressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Header/HBoxContainer/QuitButton" to="." method="OnQuitButtonPressed"]

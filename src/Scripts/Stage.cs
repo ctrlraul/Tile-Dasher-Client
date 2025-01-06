@@ -11,30 +11,34 @@ using TD.Exceptions;
 using TD.Extensions;
 using TD.Lib;
 using TD.Pages.TrackEditor;
+using TD.Particles;
 using TD.TileEffects;
 
 namespace TD;
 
 public partial class Stage : Node2D
 {
+	public static event Action<Character, long> PlayerFinished;
+	
 	public static Stage Instance { get; private set; }
 	private static readonly Logger Logger = new(nameof(Stage));
 
 	[Export] public PackedScene CharacterScene;
+	[Export] public PackedScene CrumbleParticlesScene;
 
 	public static TileGrid TileGrid;
 	private static Node2D CharactersContainer;
 	public static Camera2D Camera { get; private set; }
 	private static Node2D LowerBoundaryIndicator;
 	public static TilePreview TilePreview;
-	public static TileBehaviors TileBehaviors; // TODO
 	public static Node2D Temp;
 
-	private static Node2D CameraTarget;
 	private static Vector2 CameraVelocity;
 	private static string trackId;
+	private static long StartTime;
 	
 	public static float LowerBoundary { get; private set; }
+	public static readonly Dictionary<long, List<Vector2I>> TilesIndex = new();
 
 
 	public override void _Ready()
@@ -51,7 +55,6 @@ public partial class Stage : Node2D
 		Camera = GetNode<Camera2D>("%Camera");
 		LowerBoundaryIndicator = GetNode<Node2D>("%LowerBoundaryIndicator");
 		TilePreview = GetNode<TilePreview>("%TilePreview");
-		TileBehaviors = GetNode<TileBehaviors>("%TileBehaviors");
 		Temp = GetNode<Node2D>("%Temp");
 
 		TilePreview.Hide();
@@ -60,39 +63,37 @@ public partial class Stage : Node2D
 		Clear();
 	}
 
+	private Vector2 CameraSeek;
+
 	public override void _PhysicsProcess(double delta)
 	{
 		base._PhysicsProcess(delta);
-
-		if (IsInstanceValid(CameraTarget))
-			CameraVelocity = (CameraTarget.GlobalPosition - Camera.GlobalPosition) * 0.1f;
-
-		Camera.GlobalPosition += CameraVelocity;
+		Camera.Position += CameraVelocity;
 		CameraVelocity *= 0.9f;
 	}
 
 
 	public static void Clear()
 	{
-		CameraTarget = null;
 		trackId = null;
 		CharactersContainer.QueueFreeChildren();
 		Temp.QueueFreeChildren();
 		TileGrid.Clear();
 		LowerBoundary = float.PositiveInfinity;
+		TilesIndex.Clear();
 	}
 
 
-	public static void LoadTrack(Track track)
+	public static void LoadTrackToEdit(Track track)
 	{
 		Clear();
 		
 		trackId = track.id;
-		
+
 		foreach (long id in track.tileCoords.Keys)
 		{
 			List<int> coords = track.tileCoords[id];
-			Tile tile = Server.Tiles.Find(tile => tile.id == id);
+			Tile tile = Game.Tiles.Find(tile => tile.id == id);
 			
 			for (int i = 0; i < coords.Count; i += 2)
 			{
@@ -102,13 +103,70 @@ public partial class Stage : Node2D
 		}
 	}
 
+	public static void LoadTrackToPlay(Track track)
+	{
+		Clear();
+		
+		trackId = track.id;
+
+		List<(TileEffect, Tile, Vector2I)> onInitList = new();
+		
+		
+		foreach (long id in track.tileCoords.Keys)
+		{
+			List<int> coords = track.tileCoords[id];
+			Tile tile = Game.Tiles.Find(tile => tile.id == id);
+			
+			for (int i = 0; i < coords.Count; i += 2)
+			{
+				Vector2I coord = new(coords[i], coords[i + 1]);
+				TileGrid.SetTile(coord, tile);
+
+				if (TilesManager.NeedsIndexing(tile))
+				{
+					if (TilesIndex.TryGetValue(tile.id, out List<Vector2I> value))
+						value.Add(coord);
+					else
+						TilesIndex.Add(tile.id, [coord]);
+				}
+
+				foreach (TileEffectConfig config in tile.effects)
+				{
+					if (config.trigger == TileEffectTrigger.Init)
+					{
+						TileEffect effect = TilesManager.Effects[config.effect];
+						onInitList.Add((effect, tile, coord));
+					}
+				}
+			}
+		}
+		
+		
+		TileGrid.GenerateCollisionShapes();
+
+		
+		TriggerData triggerData = new()
+		{
+			tile = null,
+			coord = Vector2I.Zero,
+			character = null,
+			trigger = TileEffectTrigger.Init,
+		};
+		
+		foreach (var (effect, tile, coord) in onInitList)
+		{
+			triggerData.tile = tile;
+			triggerData.coord = coord;
+			effect.Trigger(triggerData);
+		}
+	}
+
 	public static void PlayTrack(Track track)
 	{
-		LoadTrack(track);
 
 		Stopwatch stopwatch = Stopwatch.StartNew();
-		TileGrid.GenerateCollisionShapes();
-		Logger.Log($"TileGrid.GenerateCollisionShapes() - {stopwatch.ElapsedMilliseconds}ms");
+		LoadTrackToPlay(track);
+		Logger.Log($"LoadTrackToPlay() - {stopwatch.ElapsedMilliseconds}ms");
 		stopwatch.Stop();
 		
 		Rect2 rect = TileGrid.GetUsedRect();
@@ -117,11 +175,12 @@ public partial class Stage : Node2D
 
 		Character player = Instance.CharacterScene.Instantiate<Character>();
 		CharactersContainer.AddChild(player);
-		player.SetPlayerName(Server.Player.name);
+		player.SetPlayerName(Game.Player.name);
 		player.RespawnPoint = GetSpawnPosition(track);
 		player.Position = player.RespawnPoint;
-
-		CameraTarget = player;
+		player.RemoteTransform.RemotePath = player.RemoteTransform.GetPathTo(Camera);
+		
+		StartTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 	}
 
 	public static Track ExportTrack()
@@ -166,36 +225,56 @@ public partial class Stage : Node2D
 	}
 
 
-	public static Vector2I WorldToGrid(Vector2 position)
-	{
-		return new Vector2I(
-			(int)Math.Round(position.X / Game.Config.tileSize),
-			(int)Math.Round(position.Y / Game.Config.tileSize)
-		);
-	}
-
-	public static Vector2 GridToWorld(Vector2I position)
-	{
-		return position * Game.Config.tileSize;
-	}
-
-
 	public static void TriggerTileEffects(string trigger, Tile tile, Vector2I coord, Character character)
 	{
 		if (tile is null)
 		{
-			Logger.Log("TriggerTileEffects :: Tile is null");
+			// Logger.Log("TriggerTileEffects :: Tile is null");
 			return;
 		}
-		
-		if (tile.effects.TryGetValue(trigger, out List<string> effectIds))
+
+		TriggerData triggerData = new()
 		{
-			foreach (ITileEffect effect in effectIds.Select(id => Game.TileEffects[id]))
-				effect.Trigger(tile, coord, character);
+			tile = tile,
+			coord = coord,
+			character = character,
+			trigger = trigger,
+		};
+
+		List<string> effectIds = new();
+
+		foreach (TileEffectConfig config in tile.effects)
+		{
+			if (config.trigger == trigger || config.trigger == TileEffectTrigger.Any)
+				effectIds.Add(config.effect);
+		}
+
+		if (effectIds.Any())
+		{
+			foreach (TileEffect effect in effectIds.Select(id => TilesManager.Effects[id]))
+				effect.Trigger(triggerData);
 		}
 		else if (trigger == TileEffectTrigger.Bump)
 		{
 			TileGrid.BumpAnimation(coord);
 		}
+	}
+
+	public static void Finish(Character character)
+	{
+		if (character.Finished)
+			return;
+		
+		character.Finish();
+		
+		long finishTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - StartTime;
+		PlayerFinished?.Invoke(character, finishTime);
+	}
+
+	public static void AddCrumbleParticles(Vector2I coord)
+	{
+		CrumbleParticles particles = Instance.CrumbleParticlesScene.Instantiate<CrumbleParticles>();
+		Temp.AddChild(particles);
+		particles.Init(coord);
 	}
 }

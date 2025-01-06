@@ -1,8 +1,6 @@
 <Project Sdk="Godot.NET.Sdk/4.4.0-dev.6">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net7.0</TargetFramework>
-    <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'ios' ">net8.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RootNamespace>TD</RootNamespace>
   </PropertyGroup>
@@ -12,8 +10,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\Extensions\" />
+    <Folder Include="Scripts\Lists\" />
     <Folder Include="Scripts\Pages\HudPage\" />
     <Folder Include="Scripts\Pages\TrackEditor\" />
+    <Folder Include="Scripts\Particles\" />
     <Folder Include="Scripts\Popups\" />
   </ItemGroup>
 </Project>

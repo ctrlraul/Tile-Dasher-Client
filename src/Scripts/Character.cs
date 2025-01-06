@@ -1,11 +1,14 @@
 using Godot;
 using TD.Enums;
+using TD.Lib;
 using TD.Models;
 
 namespace TD;
 
 public partial class Character : CharacterBody2D
 {
+	private static readonly Logger Logger = new("Character");
+    
 	public readonly float Speed = 70;
 	public readonly float JumpPower = 1300;
 	public readonly float Gravity = 35;
@@ -24,10 +27,22 @@ public partial class Character : CharacterBody2D
 	private Node2D HitCheckLeftB;
 	private Node2D HitCheckRightA;
 	private Node2D HitCheckRightB;
+	public RemoteTransform2D RemoteTransform;
+	private Timer StunTimer;
+	private AnimationPlayer AnimationPlayer;
 
 	private ulong lastBumpFrame;
+	private ulong lastStandFrame;
+	private Tile tileStoodOn;
 	public Vector2 RespawnPoint;
 	public string PlayerName { get; private set; }
+	public Vector2 Boost;
+	public bool Finished { get; private set; }
+	public long LastTeleportTimeMs;
+	private float HorizontalInput;
+	public Vector2 VelocityLastUpdate { get; private set; }
+	public Vector2I Coord => Game.WorldToGrid(Position);
+	public bool Stunned => StunTimer.TimeLeft > 0;
 
 
 	public override void _Ready()
@@ -45,6 +60,9 @@ public partial class Character : CharacterBody2D
 		HitCheckLeftB = GetNode<Node2D>("%HitChecks/LeftB");
 		HitCheckRightA = GetNode<Node2D>("%HitChecks/RightA");
 		HitCheckRightB = GetNode<Node2D>("%HitChecks/RightB");
+		RemoteTransform = GetNode<RemoteTransform2D>("%RemoteTransform2D");
+		StunTimer = GetNode<Timer>("%StunTimer");
+		AnimationPlayer = GetNode<AnimationPlayer>("%AnimationPlayer");
 		SetPlayerName(null);
 	}
 
@@ -52,20 +70,20 @@ public partial class Character : CharacterBody2D
 	{
 		base._PhysicsProcess(delta);
 
+		VelocityLastUpdate = Velocity;
+
 		float normalizedDelta = (float)delta * Engine.PhysicsTicksPerSecond;
-		Vector2 motion = new();
-
-		motion += new Vector2(Input.GetAxis("move_left", "move_right") * Speed, 0);
-		motion += Vector2.Down * Gravity;
-
-		if (IsOnFloor() && Input.IsActionPressed("jump"))
-			motion += Vector2.Up * JumpPower;
+		Vector2 motion = GetMotion(normalizedDelta);
+		Vector2 damp = GetDamp(normalizedDelta);
 
 		if (motion.X != 0)
 			Gfx.Scale = Gfx.Scale with { X = motion.X > 0 ? 1 : -1 };
 
-		Velocity += motion * normalizedDelta;
-		Velocity *= new Vector2(Mathf.Pow(Damp.X, normalizedDelta), Mathf.Pow(Damp.Y, normalizedDelta));
+		Velocity += Boost * normalizedDelta;
+		Velocity += motion;
+		Velocity *= damp;
+		
+		Boost = Vector2.Zero;
 		
 		MoveAndSlide();
 
@@ -78,48 +96,89 @@ public partial class Character : CharacterBody2D
 		JumpingShape.Disabled = !NormalShape.Disabled;
 	}
 
+	
+	private Vector2 GetMotion(float normalizedDelta)
+	{
+		Vector2 motion = new();
+
+		if (!Stunned)
+		{
+			HorizontalInput = Input.GetAxis("move_left", "move_right");
+			float speed = Speed;
+
+			// Alongside the damp scaling based on friction, this makes the player
+			// able to only move up to their regular speed on slippery blocks.
+			if (tileStoodOn is not null && tileStoodOn.friction < 1)
+				speed *= tileStoodOn.friction;
+        
+			motion += new Vector2(HorizontalInput * speed, 0);
+
+			if (IsOnFloor() && Input.IsActionPressed("jump"))
+				motion += Vector2.Up * JumpPower;
+		}
+
+		motion += Vector2.Down * Gravity;
+		
+		return motion * normalizedDelta;
+	}
+
+	private Vector2 GetDamp(float normalizedDelta)
+	{
+		float horizontalScale = tileStoodOn?.friction ?? 1;
+		
+		return new Vector2(
+			Mathf.Pow(Damp.X, normalizedDelta * horizontalScale),
+			Mathf.Pow(Damp.Y, normalizedDelta)
+		);
+	}
 
 	private void HandleCollisions()
 	{
+		tileStoodOn = null;
+		
 		for (int i = 0; i < GetSlideCollisionCount(); i++)
 		{
 			KinematicCollision2D collision = GetSlideCollision(i);
-			Vector2 normal = collision.GetNormal();
+			Vector2 normal = collision.GetNormal().Round();
 
 			switch (normal.X, normal.Y)
 			{
 				case (0, 1):
-					TouchTileUp();
+					if (Engine.GetPhysicsFrames() != lastBumpFrame)
+					{
+						lastBumpFrame = Engine.GetPhysicsFrames();
+						TouchTileUp();
+					}
 					break;
 				
 				case (0, -1):
-					TouchTileDown();
+					if (Engine.GetPhysicsFrames() != lastStandFrame)
+					{
+						lastStandFrame = Engine.GetPhysicsFrames();
+						TouchTileDown();
+					}
 					break;
 				
 				case (1, 0):
-					TouchTileLeft();
+					if (HorizontalInput < 0 || Velocity.X < 0)
+						TouchTileLeft();
 					break;
 				
 				case (-1, 0):
-					TouchTileRight();
+					if (HorizontalInput > 0 || Velocity.X > 0)
+						TouchTileRight();
+					break;
+				
+				default:
+					Logger.Log("Weird contact: ", normal);
 					break;
 			}
 		}
 	}
 	
-
 	private void TouchTileUp()
 	{
-		ulong currentFrame = Engine.GetPhysicsFrames();
-
-		if (currentFrame - lastBumpFrame < 1)
-			return;
-
-		lastBumpFrame = currentFrame;
-
 		var (tile, coord) = GetTileOnTop();
-		
-		Stage.TriggerTileEffects(TileEffectTrigger.Any, tile, coord, this);
 		Stage.TriggerTileEffects(TileEffectTrigger.Bump, tile, coord, this);
 	}
 
@@ -128,23 +187,22 @@ public partial class Character : CharacterBody2D
 		var (tile, coord) = GetTileBelow();
 
 		if (tile is { safe: true })
-			RespawnPoint = Stage.GridToWorld(coord);
+			RespawnPoint = Game.GridToWorld(coord) + Vector2.Up * Game.Config.tileSize * 0.5f;
+
+		tileStoodOn = tile;
 		
-		Stage.TriggerTileEffects(TileEffectTrigger.Any, tile, coord, this);
 		Stage.TriggerTileEffects(TileEffectTrigger.Stand, tile, coord, this);
 	}
 
 	private void TouchTileLeft()
 	{
 		var (tile, coord) = GetTileToLeft();
-		Stage.TriggerTileEffects(TileEffectTrigger.Any, tile, coord, this);
 		Stage.TriggerTileEffects(TileEffectTrigger.PushLeft, tile, coord, this);
 	}
 
 	private void TouchTileRight()
 	{
 		var (tile, coord) = GetTileToRight();
-		Stage.TriggerTileEffects(TileEffectTrigger.Any, tile, coord, this);
 		Stage.TriggerTileEffects(TileEffectTrigger.PushRight, tile, coord, this);
 	}
 
@@ -156,11 +214,33 @@ public partial class Character : CharacterBody2D
 		NameLabel.Visible = !string.IsNullOrEmpty(name);
 	}
 
-
-	private void Respawn()
+	public void Finish()
+	{
+		if (Finished)
+			return;
+		
+		Finished = true;
+		
+		SetPhysicsProcess(false);
+		
+		Tween tween = CreateTween();
+		tween.TweenProperty(this, "modulate:a", 0, 1);
+		tween.Finished += QueueFree;
+	}
+	
+	public void Respawn()
 	{
 		Position = RespawnPoint;
 		Velocity = Vector2.Zero;
+	}
+
+	public void Stun()
+	{
+		if (Stunned)
+			return;
+        
+		AnimationPlayer.Play("Stun");
+		StunTimer.Start();
 	}
 	
 
@@ -186,8 +266,8 @@ public partial class Character : CharacterBody2D
 
 	private (Tile, Vector2I) GetNearestHittingTile(Vector2 checkPositionA, Vector2 checkPositionB)
 	{
-		Vector2I coordA = Stage.WorldToGrid(checkPositionA);
-		Vector2I coordB = Stage.WorldToGrid(checkPositionB);
+		Vector2I coordA = Game.WorldToGrid(checkPositionA);
+		Vector2I coordB = Game.WorldToGrid(checkPositionB);
 		
 		Tile tileA = Stage.TileGrid.GetTileTouchable(coordA);
 		
@@ -208,8 +288,14 @@ public partial class Character : CharacterBody2D
 
 		// Neither are null so return nearest
 		
-		return Stage.GridToWorld(coordA).DistanceTo(Position) < Stage.GridToWorld(coordB).DistanceTo(Position)
+		return Game.GridToWorld(coordA).DistanceTo(Position) < Game.GridToWorld(coordB).DistanceTo(Position)
 			? (tileA, coordA)
 			: (tileB, coordB);
+	}
+
+
+	private void OnStunTimerTimeout()
+	{
+		AnimationPlayer.Stop();
 	}
 }

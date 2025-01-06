@@ -10,13 +10,15 @@ using TD.Pages.MainMenu;
 using TD.Pages.Welcome;
 using Newtonsoft.Json;
 using TD.Models;
-using TD.TileEffects;
+using TD.Pages.Splash;
+using TD.Popups;
 
 namespace TD;
 
 public partial class Game : Node
 {
 	private const string DevConfigFileName = "config.dev.json";
+	private const string DisconnectionReasonLogout = "Logout";
 
 	[Export] private Texture2D MissingTexture;
 	[Export] private Texture2D TileSet;
@@ -35,7 +37,9 @@ public partial class Game : Node
 	public static string ScenePathMain { get; } = ProjectSettings.GetSetting("application/run/main_scene").AsString();
 	public static string ScenePathLaunch { get; private set; }
 	
-	public static readonly Dictionary<string, ITileEffect> TileEffects = new();
+	
+	public static Player Player => Socket.ClientData?.player;
+	public static List<Tile> Tiles => Socket.ClientData?.tiles;
 	
 	
 	public override void _Ready()
@@ -47,17 +51,15 @@ public partial class Game : Node
 		ScenePathLaunch = CurrentScene.SceneFilePath;
 		ReconnectingOverlay = GetNode<CanvasLayer>("%ReconnectingOverlay");
 
-		Server.LoggedIn += OnLoggedIn;
-		Server.LoggedOut += OnLoggedOut;
-		Server.Connected += OnConnected;
-		Server.Disconnected += OnDisconnected;
-		Server.SseInitialData += OnSseInitialData;
+		AuthManager.LoggedIn += OnLoggedIn;
+		AuthManager.LoggedOut += OnLoggedOut;
+		Socket.Connected += OnSocketConnected;
+		Socket.Disconnected += OnSocketDisconnected;
+		Socket.GotClientData += OnSocketGotClientData;
+		Socket.GotClientDataError += OnSocketGotClientDataError;
 
 		LoadInstanceIndex();
 		LoadConfig();
-		
-		TileEffects.Add("break", new TileEffectBreak());
-		TileEffects.Add("vanish", new TileEffectVanish());
 		
 		CallDeferred(MethodName.AfterReady);
 		
@@ -67,7 +69,7 @@ public partial class Game : Node
 	
 	private static void AfterReady()
 	{
-		Server.Initialize(Config.serverUrl);
+		AuthManager.Initialize(Config.serverUrl);
 		
 		if (ScenePathLaunch != ScenePathMain)
 		{
@@ -83,18 +85,23 @@ public partial class Game : Node
 		try
 		{
 			if (InstanceIndex != -1)
-				await Server.LoginAsPlayer(Config.multiplayerTestPlayerIds[InstanceIndex]);
+				await AuthManager.LoginAsPlayer(Config.multiplayerTestPlayerIds[InstanceIndex]);
 			else
-				await Server.UpdateLoggedInState();
+				await AuthManager.UpdateLoggedInState();
 			
-			if (Server.IsLoggedIn)
+			if (AuthManager.IsLoggedIn)
 				OnLoggedIn();
 			else
 				SetPage(WelcomePage.Scene);
 		}
 		catch (Exception exception)
 		{
-			Logger.Log($"Failed to launch: {exception.Message}");
+			PopupsManager.Dialog()
+				.SetTitle("Launch Error!")
+				.SetMessage(exception.Message)
+				.SetStyle(DialogPopup.Style.Error)
+				.AddButton("Quit", () => Instance.GetTree().Quit())
+				.AddButton("Retry", Initialize);
 		}
 	}
 	
@@ -144,6 +151,8 @@ public partial class Game : Node
 	
 	public static void SetPage(PackedScene pageScene, object data = null)
 	{
+		Stage.Clear();
+        
 		SceneTree tree = Instance.GetTree();
 		Page page = pageScene.Instantiate<Page>();
 		
@@ -152,15 +161,13 @@ public partial class Game : Node
 		tree.CurrentScene.TreeExited += () => page.SetData(data);
 		tree.CurrentScene.QueueFree();
 		tree.CurrentScene = page;
+		
+		Callable.From(page.Refresh).CallDeferred();
 	}
 
 	public static Texture2D GetTileTexture(Tile tile)
 	{
-		return new AtlasTexture
-		{
-			Atlas = Instance.TileSet,
-			Region = new Rect2(tile.AtlasCoords * Config.tileSize, new Vector2(Config.tileSize, Config.tileSize)),
-		};
+		return TilesManager.GetTexture(tile);
 	}
 
 	public static Node2D AddDot(Vector2 position)
@@ -170,51 +177,80 @@ public partial class Game : Node
 		Stage.Temp.AddChild(dot);
 		return dot;
 	}
-    
+
+	public static Vector2I WorldToGrid(Vector2 position)
+	{
+		return new Vector2I(
+			(int)Math.Round(position.X / Config.tileSize),
+			(int)Math.Round(position.Y / Config.tileSize)
+		);
+	}
+
+	public static Vector2 GridToWorld(Vector2I position)
+	{
+		return position * Config.tileSize;
+	}
+
+	public static Texture2D GetTileSet()
+	{
+		return Instance.TileSet;
+	}
+	
 
 	private static void OnLoggedIn()
 	{
-		_ = Server.Connect(InDev ? 1000 : 0);
+		_ = Socket.Connect(Config.webSocketServerUrl);
 	}
 
 	private static void OnLoggedOut()
 	{
+		Socket.Disconnect(DisconnectionReasonLogout);
 		SetPage(WelcomePage.Scene);
 	}
 
-	private static void OnConnected()
-	{
-		// Do stuff in OnSseInitialData instead since that's when we know it's safe to access stuff
-	}
 
-	private static void OnDisconnected()
+	private static void OnSocketConnected()
 	{
-		Logger.Log("Disconnected");
+		Logger.Log("Socket Connected");
+		// Server will automatically send client data, so from
+		// here we just wait for OnSocketGotClientData to run.
+	}
+	
+	private static void OnSocketDisconnected()
+	{
+		Logger.Log($"Socket Disconnected (reason: {Socket.LastDisconnectionReason})");
 		
-		if (Server.IsLoggedIn)
+		if (Socket.LastDisconnectionReason != DisconnectionReasonLogout)
 			ReconnectingOverlay.Show();
 	}
 
-	private static void OnSseInitialData()
+	private static void OnSocketGotClientData(ClientData data)
 	{
-		Logger.Json(Server.Player);
-		TilesManager.SetTiles(Server.Tiles);
-        
-		// It's the first connection (just opened the game)
-		if (Server.DisconnectionsSinceLogin == 0)
-		{
-			SetPage(MainMenuPage.Scene);
-			
-			ReconnectingOverlay.Hide();
-			return;
-		}
-
-
-		// Refresh the current page in case it relies on data that has changed
-		if (CurrentScene is Page currentPage)
-			currentPage.Refresh();
+		// Logger.Json(data.player);
 		
+		TilesManager.SetTiles(data.tiles);
 
 		ReconnectingOverlay.Hide();
+        
+		switch (CurrentScene)
+		{
+			case SplashPage or WelcomePage:
+				SetPage(MainMenuPage.Scene);
+				break;
+			
+			// Refresh the current page in case it relies on data that has changed
+			case Page currentPage:
+				currentPage.Refresh();
+				break;
+		}
+	}
+
+	private static void OnSocketGotClientDataError()
+	{
+		PopupsManager.Dialog()
+			.SetTitle("Error loading client data!")
+			.SetStyle(DialogPopup.Style.Error)
+			.AddButton("Quit", () => Instance.GetTree().Quit())
+			.AddButton("Retry", Initialize);
 	}
 }

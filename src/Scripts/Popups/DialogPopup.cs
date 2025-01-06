@@ -58,7 +58,11 @@ public partial class DialogPopup : GenericPopup
     private void RemoveButtons()
     {
         buttonsContainer.Visible = false;
-        buttonsContainer.QueueFreeChildren();
+        foreach (Node child in buttonsContainer.GetChildren())
+        {
+            buttonsContainer.RemoveChild(child);
+            child.QueueFree();
+        }
     }
     
 

@@ -19,7 +19,7 @@ public partial class TilePreview : Sprite2D
 	public void Update()
 	{
 		Vector2 mouse = Stage.Instance.GetLocalMousePosition();
-		Coord = Stage.WorldToGrid(mouse);
+		Coord = Game.WorldToGrid(mouse);
 		Position = Coord * Game.Config.tileSize;
 	}
 
