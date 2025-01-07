@@ -88,7 +88,7 @@ OpenGL API 3.3.0 - Build 31.0.101.2111 - Compatibility - Using Device: Intel - I
 07:22:34         UserSettings | Loaded
 07:22:36               Server | Server is reachable!
 07:22:36               Socket | Connected!
-07:22:36               Socket | * --> InitialData #1
-07:22:37               Socket | * <-- InitialDataSuccess #1
+07:22:36               Socket | [SENT] InitialData #1
+07:22:37               Socket | [GOT] InitialDataSuccess #1
 07:22:37                 Game | Logged in!"
 selection_enabled = true

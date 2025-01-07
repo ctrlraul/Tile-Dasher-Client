@@ -4,11 +4,10 @@ using Newtonsoft.Json;
 namespace TD.Models;
 
 [JsonObject]
-public class TrackInfo
+public class PlayerProfile
 {
 	public string id;
-	public DateTime createdAt;
 	public string name;
-	public long plays;
-	public string author;
+	public uint level;
+	public DateTime lastSeen;
 }

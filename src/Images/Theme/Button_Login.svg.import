@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b2r234hmqwkdh"
-path="res://.godot/imported/GoogleLogo.svg-679e96ecce439e33891f398df1d04e1c.ctex"
+uid="uid://k6vg1axdx4hr"
+path="res://.godot/imported/Button_Login.svg-043930c81aea48dadc4ebee358cbc5da.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Images/Misc/GoogleLogo.svg"
-dest_files=["res://.godot/imported/GoogleLogo.svg-679e96ecce439e33891f398df1d04e1c.ctex"]
+source_file="res://Images/Theme/Button_Login.svg"
+dest_files=["res://.godot/imported/Button_Login.svg-043930c81aea48dadc4ebee358cbc5da.ctex"]
 
 [params]
 
@@ -32,6 +32,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=0.05
+svg/scale=1.0
 editor/scale_with_editor_scale=false
 editor/convert_colors_with_editor_theme=false

@@ -55,7 +55,7 @@ public partial class HudPage : Page
 		if (Data.track is null)
 			return;
 		
-		Stage.PlayTrack(Data.track);
+		Stage.StartRace(CreateRaceForTrack(Data.track));
 
 		Rect2I rect = Stage.TileGrid.GetUsedRect();
 		Vector2 center = new Vector2(
@@ -69,6 +69,29 @@ public partial class HudPage : Page
 			TestingTrackLabel.Text = $"Testing track: \"{Data.track.name}\"";
 	}
 
+
+	private Race CreateRaceForTrack(Track track)
+	{
+		Player player = Game.Player;
+        
+		PlayerProfile playerProfile = new()
+		{
+			id = player.id,
+			name = player.name,
+			level = player.level,
+			lastSeen = player.lastSeen
+		};
+		
+		Race race = new()
+		{
+			track = track,
+			startTime = DateTime.Now,
+			players = [playerProfile]
+		};
+
+		return race;
+	}
+	
 
 	private void OnQuitButtonPressed()
 	{

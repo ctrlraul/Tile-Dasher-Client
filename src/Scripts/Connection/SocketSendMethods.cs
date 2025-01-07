@@ -91,4 +91,19 @@ public abstract partial class Socket
         
 		return result;
 	}
+
+	public static async Task<Result> SendRaceQueueEnter(string id)
+	{
+		return await SendExpectingError("Race_Queue_Enter", id);
+	}
+
+	public static async Task SendRaceQueueLeave()
+	{
+		await SendAndForget("Race_Queue_Leave");
+	}
+
+	public static async Task SendRaceQueueReady()
+	{
+		await SendAndForget("Race_Queue_Ready");
+	}
 }

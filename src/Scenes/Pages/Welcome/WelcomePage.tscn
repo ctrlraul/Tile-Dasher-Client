@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://nu0j27o6t4b2"]
+[gd_scene load_steps=5 format=3 uid="uid://nu0j27o6t4b2"]
 
-[ext_resource type="LabelSettings" path="res://Resources/LabelSettings/Large.tres" id="1_7i7qu"]
+[ext_resource type="LabelSettings" uid="uid://cgm38e1glkkgc" path="res://Resources/LabelSettings/Large.tres" id="1_7i7qu"]
 [ext_resource type="Script" uid="uid://ca4wfpgqpmx1v" path="res://Scripts/Pages/Welcome/WelcomePage.cs" id="1_j4puq"]
-[ext_resource type="PackedScene" uid="uid://hevdhx6pid" path="res://Scenes/Pages/Welcome/LoginButton.tscn" id="3_s6jp4"]
+[ext_resource type="Texture2D" uid="uid://bynvx2ak68ueh" path="res://Images/Misc/DiscordLogo.svg" id="4_sm6tl"]
+[ext_resource type="Texture2D" uid="uid://b2r234hmqwkdh" path="res://Images/Misc/GoogleLogo.svg" id="5_032ic"]
 
 [node name="WelcomePage" type="CanvasLayer"]
 script = ExtResource("1_j4puq")
@@ -15,11 +16,12 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_type_variation = &"MarginContainer_ScreenMargin"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="VBoxContainer" type="HBoxContainer" parent="MarginContainer"]
 layout_mode = 2
 
 [node name="CenterContainer" type="CenterContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/CenterContainer"]
@@ -30,19 +32,45 @@ horizontal_alignment = 1
 
 [node name="CenterContainer2" type="CenterContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/CenterContainer2"]
 layout_mode = 2
-theme_override_constants/separation = 40
+theme_override_constants/separation = 20
 
-[node name="LoginWithGoogleButton" parent="MarginContainer/VBoxContainer/CenterContainer2/VBoxContainer" instance=ExtResource("3_s6jp4")]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/CenterContainer2/VBoxContainer"]
+layout_mode = 2
+text = "Login with:"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/CenterContainer2/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="LoginWithGoogleButton" type="Button" parent="MarginContainer/VBoxContainer/CenterContainer2/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_type_variation = &"Button_Login"
+text = "Google"
+icon = ExtResource("5_032ic")
+expand_icon = true
+
+[node name="LoginWithDiscordButton" type="Button" parent="MarginContainer/VBoxContainer/CenterContainer2/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_type_variation = &"Button_Login"
+text = "Discord"
+icon = ExtResource("4_sm6tl")
+expand_icon = true
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer/CenterContainer2/VBoxContainer"]
 layout_mode = 2
 
 [node name="LoginAsGuestButton" type="Button" parent="MarginContainer/VBoxContainer/CenterContainer2/VBoxContainer"]
-custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-text = "Login as Guest"
+theme_type_variation = &"Button_Login"
+text = "Play as Guest"
 
-[connection signal="Pressed" from="MarginContainer/VBoxContainer/CenterContainer2/VBoxContainer/LoginWithGoogleButton" to="." method="OnLoginWithGoogleButtonPressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/CenterContainer2/VBoxContainer/HBoxContainer/LoginWithGoogleButton" to="." method="OnLoginWithGoogleButtonPressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/CenterContainer2/VBoxContainer/HBoxContainer/LoginWithDiscordButton" to="." method="OnLoginWithDiscordButtonPressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/CenterContainer2/VBoxContainer/LoginAsGuestButton" to="." method="OnLoginAsGuestButtonPressed"]

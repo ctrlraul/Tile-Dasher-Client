@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Godot;
+using TD.Lib;
 
 namespace TD.Connection;
 

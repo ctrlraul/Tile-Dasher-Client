@@ -162,7 +162,7 @@ public abstract partial class Socket
 
 	private static async Task InternalSend(string eventName, object data, string exchangeId = null)
 	{
-		Logger.Log($"* --> {eventName}{(exchangeId is null ? "" : " #" + exchangeId)}");
+		Logger.Log($"[SENT] {eventName}{(exchangeId is null ? "" : " #" + exchangeId)}");
 
 		ClientMessage clientMessage = new()
 		{

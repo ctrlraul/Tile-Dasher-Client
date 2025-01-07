@@ -14,7 +14,7 @@ public partial class Page : CanvasLayer
 
 	public virtual void Refresh()
 	{
-		Logger.Log("Refreshing");
+		// Logger.Log("Refreshing");
 	}
 
 	public virtual void SetData(object data)

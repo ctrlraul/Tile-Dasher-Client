@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TD.Models;
@@ -9,11 +10,13 @@ public abstract partial class Socket
 {
 	public static event Action<ClientData> GotClientData;
 	public static event Action GotClientDataError;
-	
+	public static event Action<string> GotRacesQueueUpdate;
+	public static event Action<Race> GotRaceStart;
+    
 	
 	private static void GotMessage(ServerMessage message)
 	{
-		Logger.Log($"* <-- {message.eventName}{(message.exchangeId is null ? "" : " #" + message.exchangeId)}");
+		Logger.Log($"[GOT] {message.eventName}{(message.exchangeId is null ? "" : " #" + message.exchangeId)}");
 
 		
 		bool isExchange = message.exchangeId is not null;
@@ -24,11 +27,67 @@ public abstract partial class Socket
 			case "Client_Data":
 				ClientData = JsonConvert.DeserializeObject<ClientData>(message.data);
 				GotClientData?.Invoke(ClientData);
+				Logger.Json(ClientData.racesQueue);
 				break;
 			
 			case "Client_Data_Error":
 				GotClientDataError?.Invoke();
 				break;
+
+			case "Race_Queue_Enter":
+			{
+				RaceQueueEnter rqEnter = JsonConvert.DeserializeObject<RaceQueueEnter>(message.data);
+
+				if (!ClientData.racesQueue.TryGetValue(rqEnter.trackId, out RacesQueueEntry rqEntry))
+				{
+					rqEntry = new RacesQueueEntry { trackId = rqEnter.trackId };
+					ClientData.racesQueue.Add(rqEnter.trackId, rqEntry);
+				}
+
+				rqEntry.players.Add(rqEnter.player.id, rqEnter.player);
+				
+				GotRacesQueueUpdate?.Invoke(rqEntry.trackId);
+				break;
+			}
+
+			case "Race_Queue_Leave":
+			{
+				RaceQueueLeave rqLeave = JsonConvert.DeserializeObject<RaceQueueLeave>(message.data);
+				RacesQueueEntry rqEntry = ClientData.racesQueue[rqLeave.trackId];
+
+				rqEntry.playersReady = rqEntry.playersReady.Where(id => id != rqLeave.playerId).ToList();
+				rqEntry.players.Remove(rqLeave.playerId);
+				
+				if (rqEntry.players.Count == 0)
+					ClientData.racesQueue.Remove(rqLeave.trackId);
+				
+				GotRacesQueueUpdate?.Invoke(rqEntry.trackId);
+				break;
+			}
+
+			case "Race_Queue_Ready":
+			{
+				RaceQueueReady rqReady = JsonConvert.DeserializeObject<RaceQueueReady>(message.data);
+				RacesQueueEntry rqEntry = ClientData.racesQueue[rqReady.trackId];
+				rqEntry.playersReady.Add(rqReady.playerId);
+				GotRacesQueueUpdate?.Invoke(rqEntry.trackId);
+				break;
+			}
+
+			case "Race_Queue_Clear":
+			{
+				string trackId = JsonConvert.DeserializeObject<string>(message.data);
+				ClientData.racesQueue.Remove(trackId);
+				GotRacesQueueUpdate?.Invoke(trackId);
+				break;
+			}
+
+			case "Race_Start":
+			{
+				Race race = JsonConvert.DeserializeObject<Race>(message.data);
+				GotRaceStart?.Invoke(race);
+				break;
+			}
 
 			default:
 				if (!isExchange)

@@ -1,9 +1,16 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using TD.Lib;
 
 namespace TD.Connection;
+
+public abstract class AuthProvider
+{
+	public const string Google = "google";
+	public const string Discord = "discord";
+}
 
 public abstract class AuthManager
 {
@@ -33,17 +40,17 @@ public abstract class AuthManager
 
 	#region Login Methods
     
-	public static async void LoginWithGoogle()
+	public static async void LoginWith(string provider)
 	{
 		if (IsLoggedIn)
 			throw new Exception("Already logged in?");
         
-		Logger.Log("Signing in with Google");
+		Logger.Log("Signing in with:", provider);
 		
 		try
 		{
 			string ticketId = await Oauth.Open(
-				ServerUrl + "auth/google",
+				ServerUrl + "auth/" + provider,
 				ServerUrl + "auth/success",
 				TicketHeaderName
 			);
@@ -59,7 +66,7 @@ public abstract class AuthManager
 		}
 		catch (Exception exception)
 		{
-			Logger.Log($"Error logging in with Google: {exception.Message}");
+			Logger.Log($"Error logging in with \"{provider}\": {exception.Message}");
 		}
 	}
 
@@ -71,8 +78,9 @@ public abstract class AuthManager
 	public static async Task LoginAsPlayer(string playerId)
 	{
 		TokenManager.UseTokenStorage = false;
-		
-		Result<string> result = await Cherry("auth/impersonate").Query("id", playerId).Get<string>();
+
+		Dictionary<string, string> data = new() { { "playerId", playerId } };
+		Result<string> result = await Cherry("auth/impersonate").Post<string>(data);
 
 		if (result.error != null)
 			throw new Exception(result.error);

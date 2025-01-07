@@ -1,0 +1,44 @@
+<DOMSymbolItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" name="Button_Login" itemID="677c083b-0000021f" symbolType="graphic" lastModified="1736181819">
+  <timeline>
+    <DOMTimeline name="Button_Login" layerDepthEnabled="true">
+      <layers>
+        <DOMLayer name="Layer_1" color="#00FFFF" current="true" isSelected="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMShape>
+                  <fills>
+                    <FillStyle index="1">
+                      <SolidColor alpha="0.698039215686274"/>
+                    </FillStyle>
+                    <FillStyle index="2">
+                      <SolidColor color="#FFFFFF" alpha="0.698039215686274"/>
+                    </FillStyle>
+                    <FillStyle index="3">
+                      <SolidColor color="#FFFFFF"/>
+                    </FillStyle>
+                    <FillStyle index="4">
+                      <SolidColor color="#FFFFFF" alpha="0.898039215686275"/>
+                    </FillStyle>
+                    <FillStyle index="5">
+                      <SolidColor color="#FFFFFF" alpha="0.8"/>
+                    </FillStyle>
+                  </fills>
+                  <edges>
+                    <Edge fillStyle1="1" edges="!3280 0|4880 0!4880 0|4880 1600!4880 1600|3280 1600!3280 1600|3280 0!1640 0|3240 0!3240 0|3240 1600!3240 1600|1640 1600!1640 1600|1640 0"/>
+                    <Edge fillStyle0="2" fillStyle1="3" edges="!3400 1480|3400 120!3400 120|4760 120!4760 120|4760 1480!4760 1480|3400 1480"/>
+                    <Edge fillStyle0="1" fillStyle1="2" edges="!3320 40|4840 40!4840 40|4840 1560!4840 1560|3320 1560!3320 1560|3320 40"/>
+                    <Edge fillStyle0="2" fillStyle1="4" edges="!1760 1480|1760 120!1760 120|3120 120!3120 120|3120 1480!3120 1480|1760 1480"/>
+                    <Edge fillStyle0="1" fillStyle1="2" edges="!1680 40|3200 40!3200 40|3200 1560!3200 1560|1680 1560!1680 1560|1680 40!40 40|1560 40!1560 40|1560 1560!1560 1560|40 1560!40 1560|40 40"/>
+                    <Edge fillStyle0="1" edges="!1600 0|0 0!0 0|0 1600!0 1600|1600 1600!1600 1600|1600 0"/>
+                    <Edge fillStyle0="2" fillStyle1="5" edges="!120 1480|120 120!120 120|1480 120!1480 120|1480 1480!1480 1480|120 1480"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+      </layers>
+    </DOMTimeline>
+  </timeline>
+</DOMSymbolItem>

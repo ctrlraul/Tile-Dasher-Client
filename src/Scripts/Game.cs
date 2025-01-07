@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Godot;
 using TD.Connection;
 using TD.Exceptions;
@@ -40,6 +41,8 @@ public partial class Game : Node
 	
 	public static Player Player => Socket.ClientData?.player;
 	public static List<Tile> Tiles => Socket.ClientData?.tiles;
+	public static List<TrackInfo> LatestTracks => Socket.ClientData?.latestTracks;
+	public static Dictionary<string, RacesQueueEntry> RacesQueue => Socket.ClientData?.racesQueue;
 	
 	
 	public override void _Ready()
@@ -107,7 +110,7 @@ public partial class Game : Node
 	
 	private static void LoadInstanceIndex()
 	{
-		const string prefix = "instance=";
+		const string prefix = "--instance=";
 		
 		foreach (string arg in OS.GetCmdlineArgs())
 		{
@@ -216,12 +219,17 @@ public partial class Game : Node
 		// here we just wait for OnSocketGotClientData to run.
 	}
 	
-	private static void OnSocketDisconnected()
+	private static async void OnSocketDisconnected()
 	{
 		Logger.Log($"Socket Disconnected (reason: {Socket.LastDisconnectionReason})");
-		
+
 		if (Socket.LastDisconnectionReason != DisconnectionReasonLogout)
+		{
 			ReconnectingOverlay.Show();
+			Logger.Log("Trying to reconnect in 3 seconds...");
+			await Task.Delay(3000);
+			Initialize();
+		}
 	}
 
 	private static void OnSocketGotClientData(ClientData data)

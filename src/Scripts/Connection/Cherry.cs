@@ -165,7 +165,7 @@ public class Cherry
 	
 	private void LogSend(HttpMethod method, string path)
 	{
-		Logger.Log($"* --> [{method} {path}]");
+		Logger.Log($"[SENT] [{method} {path}]");
 	}
 	
 	private void LogError(HttpMethod method, string path, string message)

@@ -1,22 +1,29 @@
-[gd_scene load_steps=3 format=3 uid="uid://bv5q0u73syp3r"]
+[gd_scene load_steps=7 format=3 uid="uid://bv5q0u73syp3r"]
 
 [ext_resource type="Script" uid="uid://dlcy2gyspuous" path="res://Scripts/Pages/MainMenu/TracksListItem.cs" id="1_y12de"]
+[ext_resource type="LabelSettings" uid="uid://b6h3mnuwaluur" path="res://Resources/LabelSettings/Small.tres" id="2_sfxeg"]
+[ext_resource type="PackedScene" uid="uid://bhoy0d151xxut" path="res://Scenes/Misc/InputFilter.tscn" id="3_oce1v"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_rvuad"]
 font_size = 12
 outline_size = 8
 outline_color = Color(0, 0, 0, 0.5)
 
+[sub_resource type="Gradient" id="Gradient_y12de"]
+offsets = PackedFloat32Array(0, 0.1, 0.5, 0.9, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
+metadata/_snap_enabled = true
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_sfxeg"]
+gradient = SubResource("Gradient_y12de")
+width = 10
+
 [node name="TracksListItem" type="MarginContainer"]
-offset_right = 278.0
-offset_bottom = 70.0
+offset_right = 130.0
+offset_bottom = 154.0
 size_flags_horizontal = 3
 theme_type_variation = &"MarginContainer_NoMargin"
 script = ExtResource("1_y12de")
-
-[node name="Button" type="Button" parent="."]
-unique_name_in_owner = true
-layout_mode = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
@@ -25,6 +32,7 @@ mouse_filter = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
 mouse_filter = 2
+theme_override_constants/separation = 5
 
 [node name="TrackNameLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
@@ -33,11 +41,12 @@ size_flags_horizontal = 3
 text = "The FooBar Course"
 horizontal_alignment = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="HBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
+theme_override_constants/separation = 0
 
-[node name="PlayerNameLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="AuthorLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 self_modulate = Color(1, 1, 1, 0.8)
 layout_mode = 2
@@ -49,5 +58,142 @@ label_settings = SubResource("LabelSettings_rvuad")
 unique_name_in_owner = true
 self_modulate = Color(1, 1, 1, 0.8)
 layout_mode = 2
-text = "100 Plays"
+text = "Plays: 100"
 label_settings = SubResource("LabelSettings_rvuad")
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"MarginContainer_NoMargin"
+
+[node name="Panel" type="Panel" parent="MarginContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+theme_type_variation = &"Panel_NestedDark"
+
+[node name="PanelContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/MarginContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="PlayerLine1" type="MarginContainer" parent="MarginContainer/VBoxContainer/MarginContainer/PanelContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MarginContainer_NoMargin"
+
+[node name="Background" type="TextureRect" parent="MarginContainer/VBoxContainer/MarginContainer/PanelContainer/VBoxContainer/PlayerLine1"]
+self_modulate = Color(0, 1, 0.168627, 0.337255)
+layout_mode = 2
+texture = SubResource("GradientTexture1D_sfxeg")
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/MarginContainer/PanelContainer/VBoxContainer/PlayerLine1"]
+layout_mode = 2
+text = "Some Player"
+label_settings = ExtResource("2_sfxeg")
+horizontal_alignment = 1
+
+[node name="HSeparator3" type="HSeparator" parent="MarginContainer/VBoxContainer/MarginContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="PlayerLine2" type="MarginContainer" parent="MarginContainer/VBoxContainer/MarginContainer/PanelContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MarginContainer_NoMargin"
+
+[node name="Background" type="TextureRect" parent="MarginContainer/VBoxContainer/MarginContainer/PanelContainer/VBoxContainer/PlayerLine2"]
+self_modulate = Color(0, 1, 0.168627, 0.337255)
+layout_mode = 2
+texture = SubResource("GradientTexture1D_sfxeg")
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/MarginContainer/PanelContainer/VBoxContainer/PlayerLine2"]
+layout_mode = 2
+text = "Some Player"
+label_settings = ExtResource("2_sfxeg")
+horizontal_alignment = 1
+
+[node name="HSeparator2" type="HSeparator" parent="MarginContainer/VBoxContainer/MarginContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="PlayerLine3" type="MarginContainer" parent="MarginContainer/VBoxContainer/MarginContainer/PanelContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MarginContainer_NoMargin"
+
+[node name="Background" type="TextureRect" parent="MarginContainer/VBoxContainer/MarginContainer/PanelContainer/VBoxContainer/PlayerLine3"]
+self_modulate = Color(0, 1, 0.168627, 0.337255)
+layout_mode = 2
+texture = SubResource("GradientTexture1D_sfxeg")
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/MarginContainer/PanelContainer/VBoxContainer/PlayerLine3"]
+layout_mode = 2
+text = "Some Player"
+label_settings = ExtResource("2_sfxeg")
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer/MarginContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="PlayerLine4" type="MarginContainer" parent="MarginContainer/VBoxContainer/MarginContainer/PanelContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MarginContainer_NoMargin"
+
+[node name="Background" type="TextureRect" parent="MarginContainer/VBoxContainer/MarginContainer/PanelContainer/VBoxContainer/PlayerLine4"]
+self_modulate = Color(0, 1, 0.168627, 0.337255)
+layout_mode = 2
+texture = SubResource("GradientTexture1D_sfxeg")
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/MarginContainer/PanelContainer/VBoxContainer/PlayerLine4"]
+layout_mode = 2
+text = "Some Player"
+label_settings = ExtResource("2_sfxeg")
+horizontal_alignment = 1
+
+[node name="Button" type="Button" parent="."]
+show_behind_parent = true
+layout_mode = 2
+
+[node name="InputFilter" parent="." instance=ExtResource("3_oce1v")]
+unique_name_in_owner = true
+visible = false
+z_index = 1
+layout_mode = 2
+
+[node name="Buttons" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+z_index = 1
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Buttons"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -90.0
+offset_top = 10.0
+offset_right = 90.0
+offset_bottom = 50.0
+grow_horizontal = 2
+
+[node name="CancelButton" type="Button" parent="Buttons/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"Button_Floating"
+text = "Cancel"
+
+[node name="PlayButton" type="Button" parent="Buttons/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"Button_Floating"
+text = "Play"
+
+[connection signal="pressed" from="Button" to="." method="OnPressed"]
+[connection signal="pressed" from="Buttons/HBoxContainer/CancelButton" to="." method="OnCancelButtonPressed"]
+[connection signal="pressed" from="Buttons/HBoxContainer/PlayButton" to="." method="OnPlayButtonPressed"]

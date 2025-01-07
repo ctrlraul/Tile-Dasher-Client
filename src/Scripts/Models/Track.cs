@@ -13,4 +13,5 @@ public class Track
 	public long plays;
 	public Dictionary<long, Tile> customTiles;
 	public Dictionary<long, List<int>> tileCoords;
+	public string author;
 }

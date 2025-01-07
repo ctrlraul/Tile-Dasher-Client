@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://oto4ogk1rwgj"]
+[gd_scene load_steps=9 format=3 uid="uid://oto4ogk1rwgj"]
 
 [ext_resource type="Script" uid="uid://crt38jos2cwk" path="res://Scripts/Character.cs" id="1_jo2ib"]
 [ext_resource type="Texture2D" uid="uid://c3vnfnbhkts6s" path="res://Images/Placeholders/Character.png" id="2_jo2ib"]
+[ext_resource type="Script" uid="uid://dh77qmf3fbpnv" path="res://Scripts/PlayerController.cs" id="3_677pu"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jo2ib"]
 size = Vector2(40, 60)
@@ -146,5 +147,8 @@ unique_name_in_owner = true
 libraries = {
 &"": SubResource("AnimationLibrary_v7dgu")
 }
+
+[node name="PlayerController" type="Node2D" parent="."]
+script = ExtResource("3_677pu")
 
 [connection signal="timeout" from="StunTimer" to="." method="OnStunTimerTimeout"]

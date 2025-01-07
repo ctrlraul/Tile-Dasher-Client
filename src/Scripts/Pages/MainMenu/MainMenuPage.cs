@@ -26,6 +26,18 @@ public partial class MainMenuPage : Page
         PlayerLevelLabel = GetNode<Label>("%PlayerLevelLabel");
         TracksList = GetNode<Control>("%TracksList");
     }
+	
+    public override void _EnterTree()
+    {
+        base._EnterTree();
+        Socket.GotRaceStart += OnGotRaceStart;
+    }
+
+    public override void _ExitTree()
+    {
+        base._EnterTree();
+        Socket.GotRaceStart -= OnGotRaceStart;
+    }
     
 
     public override void Refresh()
@@ -37,12 +49,11 @@ public partial class MainMenuPage : Page
         
         TracksList.QueueFreeChildren();
 
-        foreach (TrackInfo trackInfo in Game.Player.trackInfos)
+        foreach (TrackInfo trackInfo in Game.LatestTracks)
         {
             TracksListItem listItem = TracksListItemScene.Instantiate<TracksListItem>();
             TracksList.AddChild(listItem);
             listItem.SetTrackInfo(trackInfo);
-            listItem.Button.Pressed += () => PlayTrack(trackInfo.id);
         }
     }
 
@@ -69,5 +80,11 @@ public partial class MainMenuPage : Page
     private void OnTrackEditorButtonPressed()
     {
         Game.SetPage(TrackEditorPage.Scene);
+    }
+
+    private void OnGotRaceStart(Race race)
+    {
+        Game.SetPage(HudPage.Scene);
+        Stage.StartRace(race);
     }
 }

@@ -161,11 +161,10 @@ public partial class Stage : Node2D
 		}
 	}
 
-	public static void PlayTrack(Track track)
+	public static void StartRace(Race race)
 	{
-
 		Stopwatch stopwatch = Stopwatch.StartNew();
-		LoadTrackToPlay(track);
+		LoadTrackToPlay(race.track);
 		Logger.Log($"LoadTrackToPlay() - {stopwatch.ElapsedMilliseconds}ms");
 		stopwatch.Stop();
 		
@@ -173,14 +172,20 @@ public partial class Stage : Node2D
 		LowerBoundary = (rect.Position.Y + rect.Size.Y + 24) * Game.Config.tileSize;
 		LowerBoundaryIndicator.Position = Vector2.Down * LowerBoundary;
 
-		Character player = Instance.CharacterScene.Instantiate<Character>();
-		CharactersContainer.AddChild(player);
-		player.SetPlayerName(Game.Player.name);
-		player.RespawnPoint = GetSpawnPosition(track);
-		player.Position = player.RespawnPoint;
-		player.RemoteTransform.RemotePath = player.RemoteTransform.GetPathTo(Camera);
+		foreach (PlayerProfile player in race.players)
+		{
+			Character character = Instance.CharacterScene.Instantiate<Character>();
+			CharactersContainer.AddChild(character);
+			character.RespawnPoint = GetSpawnPosition(race.track);
+			character.Position = character.RespawnPoint;
+			
+			if (player.id == Game.Player.id)
+				character.RemoteTransform.RemotePath = character.RemoteTransform.GetPathTo(Camera);
+			else
+				character.SetPlayerName(player.name);
+		}
 		
-		StartTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+		StartTime = new DateTimeOffset(race.startTime).ToUnixTimeMilliseconds();
 	}
 
 	public static Track ExportTrack()

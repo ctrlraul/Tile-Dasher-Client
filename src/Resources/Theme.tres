@@ -1,7 +1,8 @@
-[gd_resource type="Theme" load_steps=47 format=3 uid="uid://bmggrspqbnnk7"]
+[gd_resource type="Theme" load_steps=55 format=3 uid="uid://bmggrspqbnnk7"]
 
 [ext_resource type="Texture2D" uid="uid://bvgvxa5xm2xxs" path="res://Images/Theme/Button.svg" id="1_7fawl"]
 [ext_resource type="Texture2D" uid="uid://c3kkakop7om8l" path="res://Images/Theme/Panel.svg" id="1_cjt73"]
+[ext_resource type="Texture2D" uid="uid://k6vg1axdx4hr" path="res://Images/Theme/Button_Login.svg" id="2_rij67"]
 [ext_resource type="Texture2D" uid="uid://dw80iit3vh15t" path="res://Images/Theme/ScrollBar.svg" id="3_vmxg5"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_wv0mf"]
@@ -131,6 +132,43 @@ texture_margin_left = 8.0
 texture_margin_top = 8.0
 texture_margin_right = 8.0
 texture_margin_bottom = 8.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i3xj7"]
+atlas = ExtResource("2_rij67")
+region = Rect2(82, 0, 80, 80)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_egwcr"]
+texture = SubResource("AtlasTexture_i3xj7")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7t41e"]
+atlas = ExtResource("2_rij67")
+region = Rect2(0, 0, 80, 80)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_i3xj7"]
+texture = SubResource("AtlasTexture_7t41e")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_egwcr"]
+atlas = ExtResource("2_rij67")
+region = Rect2(164, 0, 80, 80)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1cpra"]
+texture = SubResource("AtlasTexture_egwcr")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_rij67"]
+color = Color(0, 0, 0, 0.5)
+thickness = 2
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_iprfa"]
 atlas = ExtResource("1_cjt73")
@@ -270,8 +308,20 @@ Button_Floating_Bad/base_type = &"Button"
 Button_Floating_Bad/styles/hover = SubResource("StyleBoxTexture_f6qpy")
 Button_Floating_Bad/styles/normal = SubResource("StyleBoxTexture_rioqa")
 Button_Floating_Bad/styles/pressed = SubResource("StyleBoxTexture_wytm8")
+Button_Login/base_type = &"Button"
+Button_Login/colors/font_color = Color(0.0748453, 0.0748452, 0.0748453, 1)
+Button_Login/colors/font_focus_color = Color(0.0745098, 0.0745098, 0.0745098, 1)
+Button_Login/colors/font_hover_color = Color(0.0745098, 0.0745098, 0.0745098, 1)
+Button_Login/colors/font_pressed_color = Color(0.0745098, 0.0745098, 0.0745098, 1)
+Button_Login/constants/icon_max_width = 30
+Button_Login/constants/outline_size = 0
+Button_Login/font_sizes/font_size = 20
+Button_Login/styles/hover = SubResource("StyleBoxTexture_egwcr")
+Button_Login/styles/normal = SubResource("StyleBoxTexture_i3xj7")
+Button_Login/styles/pressed = SubResource("StyleBoxTexture_1cpra")
 GridContainer/constants/h_separation = 10
 GridContainer/constants/v_separation = 10
+HSeparator/styles/separator = SubResource("StyleBoxLine_rij67")
 Label/colors/font_outline_color = Color(0, 0, 0, 0.5)
 Label/constants/outline_size = 8
 MarginContainer/constants/margin_bottom = 10
