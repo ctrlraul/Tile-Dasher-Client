@@ -64,6 +64,11 @@ public abstract partial class Socket
 	public static ClientData ClientData { get; private set; }
 
 
+	private static readonly HashSet<string> NoLogList = [
+		"Race_Character_Update"
+	];
+
+
 	#region Api
 	
 	public static async Task Connect(string serverUrl)
@@ -121,6 +126,9 @@ public abstract partial class Socket
 				byte[] buffer = new byte[32768];
 				WebSocketReceiveResult result = await Client.ReceiveAsync(buffer, ListeningStopper.Token);
 
+				if (ListeningStopper.IsCancellationRequested) // Disconnect called
+					break;
+				
 				if (result.MessageType == WebSocketMessageType.Close)
 				{
 					LastDisconnectionReason = DisconnectionReason.Kick;
@@ -162,7 +170,8 @@ public abstract partial class Socket
 
 	private static async Task InternalSend(string eventName, object data, string exchangeId = null)
 	{
-		Logger.Log($"[SENT] {eventName}{(exchangeId is null ? "" : " #" + exchangeId)}");
+		if (!NoLogList.Contains(eventName))
+			Logger.Log($"[SENT] {eventName}{(exchangeId is null ? "" : " #" + exchangeId)}");
 
 		ClientMessage clientMessage = new()
 		{

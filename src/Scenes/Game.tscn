@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://6c14qtjv84vq"]
+[gd_scene load_steps=8 format=3 uid="uid://6c14qtjv84vq"]
 
 [ext_resource type="Script" uid="uid://bjy8v372vpv3c" path="res://Scripts/Game.cs" id="1_iukft"]
 [ext_resource type="Texture2D" uid="uid://c1moevx5wq0oi" path="res://Images/Misc/MissingTexture.svg" id="2_b2bpf"]
@@ -6,6 +6,15 @@
 [ext_resource type="Texture2D" uid="uid://dxk6rejvf7v03" path="res://Images/Tiles/Tiles.png" id="3_7lihs"]
 [ext_resource type="PackedScene" uid="uid://dw356ow55yc2t" path="res://Scenes/Overlays/ConsoleOverlay.tscn" id="3_j5yw3"]
 [ext_resource type="PackedScene" uid="uid://cheyqwcerok5i" path="res://Scenes/Dot.tscn" id="4_7lihs"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7lihs"]
+bg_color = Color(1, 1, 1, 0)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(1, 1, 1, 1)
+border_blend = true
 
 [node name="Game" type="Node"]
 script = ExtResource("1_iukft")
@@ -18,3 +27,17 @@ unique_name_in_owner = true
 visible = false
 
 [node name="Console" parent="." instance=ExtResource("3_j5yw3")]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="GameInstanceColorIndicator" type="Panel" parent="CanvasLayer"]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0)
+z_index = 4096
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7lihs")

@@ -3,13 +3,14 @@ using System;
 using TD.Models;
 using TD.Pages.MainMenu;
 using TD.Pages.TrackEditor;
+using TD.Entities;
+using TD.Enums;
 
 namespace TD.Pages.Hud;
 
 public class HudData
 {
-	public Track track;
-	public bool testing;
+	public Race race;
 }
 
 public partial class HudPage : Page
@@ -52,10 +53,10 @@ public partial class HudPage : Page
 	{
 		Data = (HudData)data ?? new HudData();
 
-		if (Data.track is null)
+		if (Data.race is null)
 			return;
 		
-		Stage.StartRace(CreateRaceForTrack(Data.track));
+		Stage.StartRace(Data.race);
 
 		Rect2I rect = Stage.TileGrid.GetUsedRect();
 		Vector2 center = new Vector2(
@@ -65,37 +66,14 @@ public partial class HudPage : Page
         
 		Minimap.Generate(Stage.TileGrid.GetIdsGrid(), center);
 
-		if (Data.testing)
-			TestingTrackLabel.Text = $"Testing track: \"{Data.track.name}\"";
-	}
-
-
-	private Race CreateRaceForTrack(Track track)
-	{
-		Player player = Game.Player;
-        
-		PlayerProfile playerProfile = new()
-		{
-			id = player.id,
-			name = player.name,
-			level = player.level,
-			lastSeen = player.lastSeen
-		};
-		
-		Race race = new()
-		{
-			track = track,
-			startTime = DateTime.Now,
-			players = [playerProfile]
-		};
-
-		return race;
+		if (Data.race.type == RaceType.Test)
+			TestingTrackLabel.Text = $"Testing track: \"{Data.race.track.name}\"";
 	}
 	
 
 	private void OnQuitButtonPressed()
 	{
-		if (Data.testing)
+		if (Data.race.type == RaceType.Test)
 		{
 			Game.SetPage(TrackEditorPage.Scene);
 			return;
@@ -108,6 +86,6 @@ public partial class HudPage : Page
 	{
 		TimeSpan span = TimeSpan.FromMilliseconds(finishTime);
 		string formattedTime = $"{span.Hours:D2}:{span.Minutes:D2}:{span.Seconds:D2}.{span.Milliseconds:D3}";
-		FinishList.Text += $"{formattedTime} - {character.PlayerName}";
+		FinishList.Text += $"{formattedTime} - {character.PlayerName}\n";
 	}
 }

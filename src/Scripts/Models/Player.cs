@@ -24,5 +24,8 @@ public class Player
 	public string email;
 	public uint level;
 	public string name;
+	public string role;
 	public List<TrackInfo> trackInfos;
+
+	[JsonIgnore] public bool IsGuest => role == "guest";
 }

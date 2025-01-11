@@ -2,12 +2,15 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TD.Entities;
 
 namespace TD.Pages.Hud;
 
 public partial class Minimap : Control
 {
 	private const int Margin = 3;
+	private static readonly Color PlayerColor = new(1, 1, 0);
+	private static readonly Color OpponentColor = new(0, 0.5f, 1);
 
 	private SubViewport SubViewport;
 	private Sprite2D Sprite;
@@ -36,12 +39,22 @@ public partial class Minimap : Control
 		base._Process(delta);
 	
 		List<Character> characters = Stage.GetCharacters().ToList();
-	
-		for (int i = 0; i < characters.Count; i++)
+		List<Node2D> indicators = CharactersContainer.GetChildren().Cast<Node2D>().ToList();
+
+		for (int i = 0; i < indicators.Count; i++)
 		{
+			Node2D indicator = indicators[i];
+            
+			if (i >= characters.Count)
+			{
+				indicator.Hide();
+				continue;
+			}
+			
 			Character character = characters[i];
-			Node2D indicator = CharactersContainer.GetChild<Node2D>(i);
+			
 			indicator.Position = character.Position / Game.Config.tileSize;
+			indicator.Modulate = character.PlayerId == Game.Player.id ? PlayerColor : OpponentColor;
 		}
 	}
 	

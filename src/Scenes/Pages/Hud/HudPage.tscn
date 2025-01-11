@@ -52,6 +52,7 @@ alignment = 1
 
 [node name="TestingTrackLabel" type="Label" parent="MarginContainer/VBoxContainer/Footer"]
 unique_name_in_owner = true
+self_modulate = Color(1, 1, 1, 0.5)
 layout_mode = 2
 text = "Testing track \"Foo\""
 

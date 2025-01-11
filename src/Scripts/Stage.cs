@@ -13,6 +13,7 @@ using TD.Lib;
 using TD.Pages.TrackEditor;
 using TD.Particles;
 using TD.TileEffects;
+using TD.Entities;
 
 namespace TD;
 
@@ -35,10 +36,11 @@ public partial class Stage : Node2D
 
 	private static Vector2 CameraVelocity;
 	private static string trackId;
-	private static long StartTime;
+	private static long RaceStartTime;
 	
 	public static float LowerBoundary { get; private set; }
 	public static readonly Dictionary<long, List<Vector2I>> TilesIndex = new();
+	public static bool RaceIsOnline { get; private set; }
 
 
 	public override void _Ready()
@@ -60,10 +62,10 @@ public partial class Stage : Node2D
 		TilePreview.Hide();
 		LowerBoundaryIndicator.Hide();
 		
+		Socket.GotRaceCharacterFinished += OnRaceCharacterFinished;
+		
 		Clear();
 	}
-
-	private Vector2 CameraSeek;
 
 	public override void _PhysicsProcess(double delta)
 	{
@@ -163,6 +165,9 @@ public partial class Stage : Node2D
 
 	public static void StartRace(Race race)
 	{
+		RaceIsOnline = race.type == RaceType.Online;
+		RaceStartTime = race.startTime;
+		
 		Stopwatch stopwatch = Stopwatch.StartNew();
 		LoadTrackToPlay(race.track);
 		Logger.Log($"LoadTrackToPlay() - {stopwatch.ElapsedMilliseconds}ms");
@@ -175,17 +180,24 @@ public partial class Stage : Node2D
 		foreach (PlayerProfile player in race.players)
 		{
 			Character character = Instance.CharacterScene.Instantiate<Character>();
+			
 			CharactersContainer.AddChild(character);
+			
 			character.RespawnPoint = GetSpawnPosition(race.track);
 			character.Position = character.RespawnPoint;
-			
+
 			if (player.id == Game.Player.id)
+			{
+				character.SetPlayer(player);
+				character.AddController(Character.Controller.Player);
 				character.RemoteTransform.RemotePath = character.RemoteTransform.GetPathTo(Camera);
+			}
 			else
-				character.SetPlayerName(player.name);
+			{
+				character.SetPlayer(player, true);
+				character.AddController(Character.Controller.Socket);
+			}
 		}
-		
-		StartTime = new DateTimeOffset(race.startTime).ToUnixTimeMilliseconds();
 	}
 
 	public static Track ExportTrack()
@@ -202,14 +214,14 @@ public partial class Stage : Node2D
 		{
 			Tile tile = TileGrid.GetTile(coord);
 
-			if (track.tileCoords.ContainsKey(tile.id))
+			if (track.tileCoords.TryGetValue(tile.id, out List<int> value))
 			{
-				track.tileCoords[tile.id].Add(coord.X);
-				track.tileCoords[tile.id].Add(coord.Y);
+                value.Add(coord.X);
+                value.Add(coord.Y);
 			}
 			else
 			{
-				track.tileCoords.Add(tile.id, new List<int> { coord.X, coord.Y });
+				track.tileCoords.Add(tile.id, [coord.X, coord.Y]);
 			}
 		}
 
@@ -265,15 +277,20 @@ public partial class Stage : Node2D
 		}
 	}
 
-	public static void Finish(Character character)
+	public static void Finish(Character character, long time = 0)
 	{
 		if (character.Finished)
 			return;
 		
 		character.Finish();
 		
-		long finishTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - StartTime;
-		PlayerFinished?.Invoke(character, finishTime);
+		if (time == 0)
+			time |= DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - RaceStartTime;
+		
+		if (RaceIsOnline && character.PlayerId == Game.Player.id)
+			_ = Socket.SendRaceCharacterFinish();
+		
+		PlayerFinished?.Invoke(character, time);
 	}
 
 	public static void AddCrumbleParticles(Vector2I coord)
@@ -281,5 +298,18 @@ public partial class Stage : Node2D
 		CrumbleParticles particles = Instance.CrumbleParticlesScene.Instantiate<CrumbleParticles>();
 		Temp.AddChild(particles);
 		particles.Init(coord);
+	}
+	
+
+	private void OnRaceCharacterFinished(RaceCharacterFinish finish)
+	{
+		foreach (Character character in GetCharacters())
+		{
+			if (character.PlayerId != finish.playerId)
+				continue;
+
+			Finish(character, finish.time);
+			return;
+		}
 	}
 }

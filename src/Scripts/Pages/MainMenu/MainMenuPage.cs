@@ -60,7 +60,7 @@ public partial class MainMenuPage : Page
 
     private async void PlayTrack(string id)
     {
-        Result<Track> result = await Socket.SendPlayTrack(id);
+        Result<Track> result = await Socket.SendRaceSolo(id);
 
         if (result.error is not null)
         {
@@ -68,7 +68,10 @@ public partial class MainMenuPage : Page
             return;
         }
         
-        Game.SetPage(HudPage.Scene, new HudData { track = result.data });
+        Game.SetPage(HudPage.Scene, new HudData
+        {
+            race = Game.CreateRaceForTrack(result.data)
+        });
     }
     
 
@@ -84,7 +87,6 @@ public partial class MainMenuPage : Page
 
     private void OnGotRaceStart(Race race)
     {
-        Game.SetPage(HudPage.Scene);
-        Stage.StartRace(race);
+        Game.SetPage(HudPage.Scene, new HudData { race = race });
     }
 }

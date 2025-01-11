@@ -1,16 +1,18 @@
 using Godot;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using TD.Connection;
 using TD.Misc;
 using TD.Models;
+using TD.Pages.Hud;
 using TD.Popups;
 
 namespace TD.Pages.MainMenu;
 
 public partial class TracksListItem : Control
 {
+	private static bool AwaitingResponse;
+    
 	private Label TrackNameLabel;
 	private Label AuthorLabel;
 	private Label PlaysLabel;
@@ -20,6 +22,7 @@ public partial class TracksListItem : Control
 
 	private TrackInfo TrackInfo;
 	private bool LocalPlayerPlaying;
+	private int PlayersCount;
 
 
 	public override void _Ready()
@@ -90,6 +93,7 @@ public partial class TracksListItem : Control
 		}
 
 		LocalPlayerPlaying = rqEntry.players.ContainsKey(Game.Player.id);
+		PlayersCount = players.Count;
         
 		InputFilter.Visible = LocalPlayerPlaying;
 		Buttons.Visible = LocalPlayerPlaying;
@@ -121,11 +125,18 @@ public partial class TracksListItem : Control
 	{
 		if (LocalPlayerPlaying)
 			return;
+
+		if (AwaitingResponse)
+			return;
+		
+		AwaitingResponse = true;
 		
 		Result result = await Socket.SendRaceQueueEnter(TrackInfo.id);
+		
+		AwaitingResponse = false;
 
 		if (result.error is not null)
-			PopupsManager.GenericErrorDialog("Error entering track queue!", result.error);
+			PopupsManager.GenericErrorDialog("Error entering race queue!", result.error);
 	}
 
 	private void OnCancelButtonPressed()
@@ -133,9 +144,23 @@ public partial class TracksListItem : Control
 		_ = Socket.SendRaceQueueLeave();
 	}
 
-	private void OnPlayButtonPressed()
+	private async void OnPlayButtonPressed()
 	{
-		_ = Socket.SendRaceQueueReady();
+		if (PlayersCount > 1)
+		{
+			_ = Socket.SendRaceQueueReady();
+			return;
+		}
+		
+		Result<Track> result = await Socket.SendRaceSolo(TrackInfo.id);
+
+		if (result.error is not null)
+			PopupsManager.GenericErrorDialog("Error loading track!", result.error);
+		
+		Game.SetPage(HudPage.Scene, new HudData
+		{
+			race = Game.CreateRaceForTrack(result.data)
+		});
 	}
     
 	private void OnGotRacesQueueUpdate(string trackId)

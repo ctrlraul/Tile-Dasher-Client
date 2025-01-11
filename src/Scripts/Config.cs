@@ -22,7 +22,8 @@ public class Config
 	
 	// Debug
 	
-	public List<string> multiplayerTestPlayerIds = new();
+	public List<string> multiplayerTestPlayerIds = [];
+	public List<string> multiplayerTestColors = [];
 	public bool showDragNodes;
 	
 	

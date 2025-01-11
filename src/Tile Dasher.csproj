@@ -11,9 +11,14 @@
   <ItemGroup>
     <Folder Include="Scripts\Extensions\" />
     <Folder Include="Scripts\Lists\" />
-    <Folder Include="Scripts\Pages\HudPage\" />
     <Folder Include="Scripts\Pages\TrackEditor\" />
     <Folder Include="Scripts\Particles\" />
     <Folder Include="Scripts\Popups\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Scripts\Pages\HudPage\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="Scripts\Pages\HudPage\**" />
   </ItemGroup>
 </Project>

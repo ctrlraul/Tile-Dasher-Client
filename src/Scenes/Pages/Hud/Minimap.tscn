@@ -10,6 +10,7 @@
 shader = ExtResource("2_m7alo")
 
 [node name="Minimap" type="MarginContainer"]
+custom_minimum_size = Vector2(0, 140)
 offset_right = 326.0
 offset_bottom = 100.0
 size_flags_horizontal = 3
@@ -17,7 +18,6 @@ theme_type_variation = &"MarginContainer_NoMargin"
 script = ExtResource("1_5ris6")
 
 [node name="Panel" type="Panel" parent="."]
-custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
 theme_type_variation = &"Panel_NestedDark"
 
@@ -29,7 +29,7 @@ stretch = true
 unique_name_in_owner = true
 transparent_bg = true
 handle_input_locally = false
-size = Vector2i(326, 120)
+size = Vector2i(326, 140)
 render_target_update_mode = 4
 
 [node name="Node2D" type="Node2D" parent="SubViewportContainer/SubViewport"]
@@ -50,6 +50,27 @@ unique_name_in_owner = true
 [node name="0" type="Node2D" parent="SubViewportContainer/SubViewport/Node2D/CharactersContainer"]
 
 [node name="Sprite2D" type="Sprite2D" parent="SubViewportContainer/SubViewport/Node2D/CharactersContainer/0"]
+scale = Vector2(1, 2)
+texture = ExtResource("4_njagd")
+offset = Vector2(0, -0.5)
+
+[node name="1" type="Node2D" parent="SubViewportContainer/SubViewport/Node2D/CharactersContainer"]
+
+[node name="Sprite2D" type="Sprite2D" parent="SubViewportContainer/SubViewport/Node2D/CharactersContainer/1"]
+scale = Vector2(1, 2)
+texture = ExtResource("4_njagd")
+offset = Vector2(0, -0.5)
+
+[node name="2" type="Node2D" parent="SubViewportContainer/SubViewport/Node2D/CharactersContainer"]
+
+[node name="Sprite2D" type="Sprite2D" parent="SubViewportContainer/SubViewport/Node2D/CharactersContainer/2"]
+scale = Vector2(1, 2)
+texture = ExtResource("4_njagd")
+offset = Vector2(0, -0.5)
+
+[node name="3" type="Node2D" parent="SubViewportContainer/SubViewport/Node2D/CharactersContainer"]
+
+[node name="Sprite2D" type="Sprite2D" parent="SubViewportContainer/SubViewport/Node2D/CharactersContainer/3"]
 scale = Vector2(1, 2)
 texture = ExtResource("4_njagd")
 offset = Vector2(0, -0.5)

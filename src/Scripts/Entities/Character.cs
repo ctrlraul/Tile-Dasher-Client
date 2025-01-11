@@ -1,18 +1,26 @@
 using System;
 using Godot;
+using TD.Entities.CharacterControllers;
 using TD.Models;
 
-namespace TD;
+namespace TD.Entities;
 
 public partial class Character : CharacterBody2D
 {
+	public enum Controller
+	{
+		Player,
+		Socket,
+	}
+	
+	
 	public event Action<double> BeforeUpdate; 
 	public event Action<double> AfterUpdate;
 	
 	
-	public readonly float Speed = 70;
-	public readonly float JumpPower = 1300;
-	public readonly float Gravity = 35;
+	public readonly float Speed = 90;
+	public readonly float JumpPower = 1125;
+	public readonly float Gravity = 23.5f;
 	public readonly Vector2 Damp = new(0.85f, 0.98f);
 
 
@@ -34,6 +42,7 @@ public partial class Character : CharacterBody2D
 
 	public Vector2 RespawnPoint;
 	public string PlayerName { get; private set; }
+	public string PlayerId { get; private set; }
 	public Vector2 Boost;
 	public bool Finished { get; private set; }
 	public long LastTeleportTimeMs;
@@ -60,7 +69,7 @@ public partial class Character : CharacterBody2D
 		RemoteTransform = GetNode<RemoteTransform2D>("%RemoteTransform2D");
 		StunTimer = GetNode<Timer>("%StunTimer");
 		AnimationPlayer = GetNode<AnimationPlayer>("%AnimationPlayer");
-		SetPlayerName(null);
+		Clear();
 	} 
     
 	public override void _PhysicsProcess(double delta)
@@ -77,11 +86,34 @@ public partial class Character : CharacterBody2D
 	}
 
 
-	public void SetPlayerName(string name)
+	private void Clear()
 	{
-		PlayerName = name;
-		NameLabel.Text = name;
-		NameLabel.Visible = !string.IsNullOrEmpty(name);
+		PlayerId = null;
+		PlayerName = null;
+		NameLabel.Text = null;
+	}
+
+	public void AddController(Controller controller)
+	{
+		switch (controller)
+		{
+			case Controller.Player:
+				AddChild(new PlayerController());
+				break;
+			
+			case Controller.Socket:
+				AddChild(new SocketController());
+				break;
+		}
+	}
+
+	public void SetPlayer(PlayerProfile player, bool showName = false)
+	{
+		PlayerId = player.id;
+		PlayerName = player.name;
+		
+		if (showName)
+			NameLabel.Text = player.name;
 	}
 
 	public void Finish()

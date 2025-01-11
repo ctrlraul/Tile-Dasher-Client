@@ -7,7 +7,7 @@ namespace TD.Lib;
 
 public class Logger
 {
-    public static string GlobalPrefix { get; set; }
+    public static string ColorHex { get; set; }
 
     private static string CurrentTime => DateTime.Now.ToString("HH:mm:ss");
 
@@ -21,7 +21,7 @@ public class Logger
 
     public void Log(params object[] message)
     {
-        GD.Print(Format(string.Join(" ", message)));
+        GD.PrintRich(Format(string.Join(" ", message)));
     }
 
     // public void Error(object message)
@@ -38,6 +38,11 @@ public class Logger
     private string Format(object message)
     {
         string buff = string.Concat(Enumerable.Repeat(" ", Math.Max(0, 20 - label.Length)));
-        return $"{GlobalPrefix}{CurrentTime} {buff}{label} | {message}";
+        string text = $"{CurrentTime} {buff}{label} | {message}";
+
+        if (ColorHex is not null)
+            text = $"[color={ColorHex}]{text}[/color]";
+        
+        return text;
     }
 }

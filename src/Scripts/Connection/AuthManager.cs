@@ -72,7 +72,14 @@ public abstract class AuthManager
 
 	public static async void LoginAsGuest()
 	{
-		Logger.Log("Login as guest!");
+		Result<string> result = await Cherry("auth/guest").Get<string>();
+		
+		if (result.error != null)
+			throw new Exception(result.error);
+		
+		SetTicket(result.data);
+		
+		LoggedIn?.Invoke();
 	}
 	
 	public static async Task LoginAsPlayer(string playerId)
@@ -86,6 +93,8 @@ public abstract class AuthManager
 			throw new Exception(result.error);
 		
 		SetTicket(result.data);
+		
+		LoggedIn?.Invoke();
 	}
 
 	#endregion

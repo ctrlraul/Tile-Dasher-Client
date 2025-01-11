@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Godot;
 using TD.Models;
 
 namespace TD.Connection;
@@ -77,9 +78,9 @@ public abstract partial class Socket
 		return result;
 	}
 
-	public static async Task<Result<Track>> SendPlayTrack(string id)
+	public static async Task<Result<Track>> SendRaceSolo(string id)
 	{
-		Result<Track> result = await SendExpectingResultOrError<Track>("Track_Play", id);
+		Result<Track> result = await SendExpectingResultOrError<Track>("Race_Solo", id);
 
 		if (result.error is null)
 		{
@@ -105,5 +106,31 @@ public abstract partial class Socket
 	public static async Task SendRaceQueueReady()
 	{
 		await SendAndForget("Race_Queue_Ready");
+	}
+
+	public static async Task SendRaceCharacterUpdate(
+		Vector2 position,
+		Vector2 velocity,
+		int horizontalInput,
+		int verticalInput
+	)
+	{
+		RaceCharacterUpdate data = new()
+		{
+			x = position.X,
+			y = position.Y,
+			vx = velocity.X,
+			vy = velocity.Y,
+			
+			ih = horizontalInput,
+			iv = verticalInput,
+		};
+		
+		await SendAndForget("Race_Character_Update", data);
+	}
+
+	public static async Task SendRaceCharacterFinish()
+	{
+		await SendAndForget("Race_Character_Finish");
 	}
 }

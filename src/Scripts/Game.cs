@@ -10,6 +10,7 @@ using TD.Pages;
 using TD.Pages.MainMenu;
 using TD.Pages.Welcome;
 using Newtonsoft.Json;
+using TD.Enums;
 using TD.Models;
 using TD.Pages.Splash;
 using TD.Popups;
@@ -30,6 +31,7 @@ public partial class Game : Node
 	private static int InstanceIndex;
 
 	private static CanvasLayer ReconnectingOverlay;
+	private static Control GameInstanceColorIndicator;
 
 	public static Config Config { get; private set; }
 	public static Node CurrentScene => Instance.GetTree().CurrentScene;
@@ -53,6 +55,7 @@ public partial class Game : Node
 		Instance = this;
 		ScenePathLaunch = CurrentScene.SceneFilePath;
 		ReconnectingOverlay = GetNode<CanvasLayer>("%ReconnectingOverlay");
+		GameInstanceColorIndicator = GetNode<Control>("%GameInstanceColorIndicator");
 
 		AuthManager.LoggedIn += OnLoggedIn;
 		AuthManager.LoggedOut += OnLoggedOut;
@@ -61,8 +64,8 @@ public partial class Game : Node
 		Socket.GotClientData += OnSocketGotClientData;
 		Socket.GotClientDataError += OnSocketGotClientDataError;
 
-		LoadInstanceIndex();
 		LoadConfig();
+		LoadInstanceIndex();
 		
 		CallDeferred(MethodName.AfterReady);
 		
@@ -88,14 +91,18 @@ public partial class Game : Node
 		try
 		{
 			if (InstanceIndex != -1)
+			{
 				await AuthManager.LoginAsPlayer(Config.multiplayerTestPlayerIds[InstanceIndex]);
+			}
 			else
+			{
 				await AuthManager.UpdateLoggedInState();
 			
-			if (AuthManager.IsLoggedIn)
-				OnLoggedIn();
-			else
-				SetPage(WelcomePage.Scene);
+				if (AuthManager.IsLoggedIn)
+					OnLoggedIn();
+				else
+					SetPage(WelcomePage.Scene);
+			}
 		}
 		catch (Exception exception)
 		{
@@ -104,7 +111,13 @@ public partial class Game : Node
 				.SetMessage(exception.Message)
 				.SetStyle(DialogPopup.Style.Error)
 				.AddButton("Quit", () => Instance.GetTree().Quit())
-				.AddButton("Retry", Initialize);
+				.AddButton("Retry", () =>
+				{
+					ReconnectingOverlay.Show();
+					Initialize();
+				});
+			
+			ReconnectingOverlay.Hide();
 		}
 	}
 	
@@ -117,7 +130,11 @@ public partial class Game : Node
 			if (arg.StartsWith(prefix))
 			{
 				InstanceIndex = int.Parse(arg.Substring(prefix.Length));
-				Logger.GlobalPrefix = $"{InstanceIndex} ";
+				
+				string colorHex = Config.multiplayerTestColors[InstanceIndex];
+
+				Logger.ColorHex = colorHex;
+				GameInstanceColorIndicator.Modulate = new Color(colorHex);
 				return;
 			}
 		}
@@ -197,6 +214,29 @@ public partial class Game : Node
 	public static Texture2D GetTileSet()
 	{
 		return Instance.TileSet;
+	}
+	
+	public static  Race CreateRaceForTrack(Track track, string raceType = RaceType.Local)
+	{
+		Player player = Player;
+        
+		PlayerProfile playerProfile = new()
+		{
+			id = player.id,
+			name = player.name,
+			level = player.level,
+			lastSeen = player.lastSeen
+		};
+		
+		Race race = new()
+		{
+			track = track,
+			startTime = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
+			players = [playerProfile],
+			type = raceType
+		};
+
+		return race;
 	}
 	
 

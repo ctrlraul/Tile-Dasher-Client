@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -12,11 +13,14 @@ public abstract partial class Socket
 	public static event Action GotClientDataError;
 	public static event Action<string> GotRacesQueueUpdate;
 	public static event Action<Race> GotRaceStart;
+	public static event Action<RaceCharacterUpdate> GotRaceCharacterUpdate;
+	public static event Action<RaceCharacterFinish> GotRaceCharacterFinished;
     
 	
 	private static void GotMessage(ServerMessage message)
 	{
-		Logger.Log($"[GOT] {message.eventName}{(message.exchangeId is null ? "" : " #" + message.exchangeId)}");
+		if (!NoLogList.Contains(message.eventName))
+			Logger.Log($"[GOT] {message.eventName}{(message.exchangeId is null ? "" : " #" + message.exchangeId)}");
 
 		
 		bool isExchange = message.exchangeId is not null;
@@ -27,7 +31,6 @@ public abstract partial class Socket
 			case "Client_Data":
 				ClientData = JsonConvert.DeserializeObject<ClientData>(message.data);
 				GotClientData?.Invoke(ClientData);
-				Logger.Json(ClientData.racesQueue);
 				break;
 			
 			case "Client_Data_Error":
@@ -86,6 +89,20 @@ public abstract partial class Socket
 			{
 				Race race = JsonConvert.DeserializeObject<Race>(message.data);
 				GotRaceStart?.Invoke(race);
+				break;
+			}
+
+			case "Race_Character_Update":
+			{
+				RaceCharacterUpdate update = JsonConvert.DeserializeObject<RaceCharacterUpdate>(message.data);
+				GotRaceCharacterUpdate?.Invoke(update);
+				break;
+			}
+
+			case "Race_Character_Finish":
+			{
+				RaceCharacterFinish finish = JsonConvert.DeserializeObject<RaceCharacterFinish>(message.data);
+				GotRaceCharacterFinished?.Invoke(finish);
 				break;
 			}
 

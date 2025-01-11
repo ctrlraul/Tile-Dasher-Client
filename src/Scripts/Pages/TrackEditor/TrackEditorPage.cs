@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TD.Connection;
+using TD.Enums;
 using TD.Models;
 using TD.Extensions;
 using TD.Pages.Hud;
@@ -274,8 +275,7 @@ public partial class TrackEditorPage : Page
 		
 		HudData hudData = new()
 		{
-			track = TrackCache,
-			testing = true
+			race = Game.CreateRaceForTrack(TrackCache, RaceType.Test)
 		};
 		
 		Game.SetPage(HudPage.Scene, hudData);

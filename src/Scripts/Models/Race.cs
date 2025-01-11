@@ -6,7 +6,8 @@ namespace TD.Models;
 
 [JsonObject]
 public class Race {
-	public DateTime startTime;
+	public long startTime;
 	public List<PlayerProfile> players;
 	public Track track;
+	public string type;
 }

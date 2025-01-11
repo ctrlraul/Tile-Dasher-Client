@@ -1,14 +1,13 @@
-[gd_scene load_steps=9 format=3 uid="uid://oto4ogk1rwgj"]
+[gd_scene load_steps=8 format=3 uid="uid://oto4ogk1rwgj"]
 
-[ext_resource type="Script" uid="uid://crt38jos2cwk" path="res://Scripts/Character.cs" id="1_jo2ib"]
+[ext_resource type="Script" uid="uid://crt38jos2cwk" path="res://Scripts/Entities/Character.cs" id="1_jo2ib"]
 [ext_resource type="Texture2D" uid="uid://c3vnfnbhkts6s" path="res://Images/Placeholders/Character.png" id="2_jo2ib"]
-[ext_resource type="Script" uid="uid://dh77qmf3fbpnv" path="res://Scripts/PlayerController.cs" id="3_677pu"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jo2ib"]
-size = Vector2(40, 60)
+size = Vector2(40, 50)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cvjmr"]
-size = Vector2(40, 120)
+size = Vector2(40, 110)
 
 [sub_resource type="Animation" id="Animation_677pu"]
 length = 0.001
@@ -84,12 +83,12 @@ texture = ExtResource("2_jo2ib")
 
 [node name="NormalShape" type="CollisionShape2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(0, -30)
+position = Vector2(0, -25)
 shape = SubResource("RectangleShape2D_jo2ib")
 
 [node name="JumpingShape" type="CollisionShape2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(0, -60)
+position = Vector2(0, -55)
 shape = SubResource("RectangleShape2D_cvjmr")
 disabled = true
 
@@ -103,22 +102,22 @@ position = Vector2(-22, 10)
 position = Vector2(22, 10)
 
 [node name="UpA" type="Marker2D" parent="HitChecks"]
-position = Vector2(-22, -130)
+position = Vector2(-22, -120)
 
 [node name="UpB" type="Marker2D" parent="HitChecks"]
-position = Vector2(22, -130)
+position = Vector2(22, -120)
 
 [node name="LeftA" type="Marker2D" parent="HitChecks"]
 position = Vector2(-30, 2)
 
 [node name="LeftB" type="Marker2D" parent="HitChecks"]
-position = Vector2(-30, -62)
+position = Vector2(-30, -52)
 
 [node name="RightA" type="Marker2D" parent="HitChecks"]
 position = Vector2(30, 2)
 
 [node name="RightB" type="Marker2D" parent="HitChecks"]
-position = Vector2(30, -62)
+position = Vector2(30, -52)
 
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="."]
 unique_name_in_owner = true
@@ -147,8 +146,5 @@ unique_name_in_owner = true
 libraries = {
 &"": SubResource("AnimationLibrary_v7dgu")
 }
-
-[node name="PlayerController" type="Node2D" parent="."]
-script = ExtResource("3_677pu")
 
 [connection signal="timeout" from="StunTimer" to="." method="OnStunTimerTimeout"]

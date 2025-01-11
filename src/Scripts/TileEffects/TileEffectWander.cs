@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using TD.Entities;
 
 namespace TD.TileEffects;
 
