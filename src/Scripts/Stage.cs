@@ -63,6 +63,7 @@ public partial class Stage : Node2D
 		LowerBoundaryIndicator.Hide();
 		
 		Socket.GotRaceCharacterFinished += OnRaceCharacterFinished;
+		Socket.GotRaceCharacterQuit += OnGotRaceCharacterQuit;
 		
 		Clear();
 	}
@@ -305,11 +306,23 @@ public partial class Stage : Node2D
 	{
 		foreach (Character character in GetCharacters())
 		{
-			if (character.PlayerId != finish.playerId)
-				continue;
+			if (character.PlayerId == finish.playerId)
+			{
+				Finish(character, finish.time);
+				break;
+			}
+		}
+	}
 
-			Finish(character, finish.time);
-			return;
+	private void OnGotRaceCharacterQuit(string playerId)
+	{
+		foreach (Character character in GetCharacters())
+		{
+			if (character.PlayerId == playerId)
+			{
+				character.Finish();
+				break;
+			}
 		}
 	}
 }

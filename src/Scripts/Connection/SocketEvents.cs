@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -15,6 +14,7 @@ public abstract partial class Socket
 	public static event Action<Race> GotRaceStart;
 	public static event Action<RaceCharacterUpdate> GotRaceCharacterUpdate;
 	public static event Action<RaceCharacterFinish> GotRaceCharacterFinished;
+	public static event Action<string> GotRaceCharacterQuit;
     
 	
 	private static void GotMessage(ServerMessage message)
@@ -103,6 +103,13 @@ public abstract partial class Socket
 			{
 				RaceCharacterFinish finish = JsonConvert.DeserializeObject<RaceCharacterFinish>(message.data);
 				GotRaceCharacterFinished?.Invoke(finish);
+				break;
+			}
+
+			case "Race_Character_Quit":
+			{
+				string playerId = JsonConvert.DeserializeObject<string>(message.data);
+				GotRaceCharacterQuit?.Invoke(playerId);
 				break;
 			}
 

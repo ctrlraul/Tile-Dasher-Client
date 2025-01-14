@@ -70,6 +70,7 @@ public partial class Character : CharacterBody2D
 		StunTimer = GetNode<Timer>("%StunTimer");
 		AnimationPlayer = GetNode<AnimationPlayer>("%AnimationPlayer");
 		Clear();
+		Modulate = Color.FromHsv(GD.Randf(), 1, 1);
 	} 
     
 	public override void _PhysicsProcess(double delta)

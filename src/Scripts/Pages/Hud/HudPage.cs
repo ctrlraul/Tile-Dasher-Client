@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using TD.Connection;
 using TD.Models;
 using TD.Pages.MainMenu;
 using TD.Pages.TrackEditor;
@@ -73,13 +74,21 @@ public partial class HudPage : Page
 
 	private void OnQuitButtonPressed()
 	{
-		if (Data.race.type == RaceType.Test)
+		switch (Data.race.type)
 		{
-			Game.SetPage(TrackEditorPage.Scene);
-			return;
-		}
+			case RaceType.Test:
+				Game.SetPage(TrackEditorPage.Scene);
+				break;
 			
-		Game.SetPage(MainMenuPage.Scene);
+			case RaceType.Local:
+				Game.SetPage(MainMenuPage.Scene);
+				break;
+				
+			case RaceType.Online:
+				_ = Socket.SendRaceCharacterQuit();
+				Game.SetPage(MainMenuPage.Scene);
+				break;
+		}
 	}
 
 	private void OnPlayerFinished(Character character, long finishTime)

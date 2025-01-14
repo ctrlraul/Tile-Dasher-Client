@@ -7,8 +7,8 @@ namespace TD;
 [JsonObject]
 public class Config
 {
-	public string serverUrl = "http://localhost:4200/";
-	public string webSocketServerUrl = "ws://localhost:4201";
+	public string serverUrl = "https://tile-dasher-server.onrender.com";
+	public string webSocketServerUrl = "wss://tile-dasher-server.onrender.com";
 
 
 	public int tileSize = 80;

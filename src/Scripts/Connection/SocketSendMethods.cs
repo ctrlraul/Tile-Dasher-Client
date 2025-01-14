@@ -133,4 +133,9 @@ public abstract partial class Socket
 	{
 		await SendAndForget("Race_Character_Finish");
 	}
+
+	public static async Task SendRaceCharacterQuit()
+	{
+		await SendAndForget("Race_Character_Quit");
+	}
 }

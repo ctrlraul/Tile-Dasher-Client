@@ -19,7 +19,7 @@ namespace TD;
 
 public partial class Game : Node
 {
-	private const string DevConfigFileName = "config.dev.json";
+	private const string DevConfigFileName = "config.dev.jsonc";
 	private const string DisconnectionReasonLogout = "Logout";
 
 	[Export] private Texture2D MissingTexture;
@@ -69,7 +69,9 @@ public partial class Game : Node
 		
 		CallDeferred(MethodName.AfterReady);
 		
-		Logger.Log($"OS - {OS.GetName()}");
+		Logger.Log($"OS: {OS.GetName()}");
+		Logger.Log($"Server URL: {Config.serverUrl}");
+		Logger.Log($"Socket Server URL: {Config.webSocketServerUrl}");
 	}
 	
 	
@@ -107,7 +109,7 @@ public partial class Game : Node
 		catch (Exception exception)
 		{
 			PopupsManager.Dialog()
-				.SetTitle("Launch Error!")
+				.SetTitle("Error!")
 				.SetMessage(exception.Message)
 				.SetStyle(DialogPopup.Style.Error)
 				.AddButton("Quit", () => Instance.GetTree().Quit())
